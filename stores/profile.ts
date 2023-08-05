@@ -12,12 +12,13 @@ export const useProfileStore = defineStore('profile', {
     bio: '',
     image: '',
     post: null,
-    posts: null,
+    posts: [],
     allLikes: 0,
   }),
   actions: {
     async getProfile(_id: string) {
       this.restUser();
+      this.allLikeCount();
 
       const { data } = await $axios.get(`/api/profiles/${_id}`);
       const { id, name, bio, image, posts } = data[0];
@@ -34,7 +35,18 @@ export const useProfileStore = defineStore('profile', {
       this.$state.bio = '';
       this.$state.name = '';
       this.$state.image = '';
-      this.$state.posts = null;
+      this.$state.posts = [];
+    },
+
+    allLikeCount() {
+      this.allLikes = 0;
+      for (let i = 0; i < this.posts.length; i++) {
+        const post = this.posts[i];
+        // @ts-ignore
+        for (let j = 0; j < post.like.length; j++) {
+          this.allLikes++;
+        }
+      }
     },
   },
   persist: true,

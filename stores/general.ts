@@ -15,7 +15,7 @@ export const useGeneralStore = defineStore('general', {
     selectedPos: null,
     ids: null,
     isBackUrl: '/',
-    posts: null,
+    posts: [],
     suggested: null,
     following: null,
   }),
@@ -79,6 +79,13 @@ export const useGeneralStore = defineStore('general', {
     async getAllUsersAndPosts() {
       const { data } = await $axios.get('/api/home');
       this.posts = data;
+    },
+
+    async getPostById(id: number) {
+      let res = await $axios.get(`/api/posts/${id}`);
+
+      this.$state.selectedPos = res.data.post[0];
+      this.$state.ids = res.data.ids;
     },
   },
 });

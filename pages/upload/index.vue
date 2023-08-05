@@ -149,6 +149,8 @@
 <script setup>
 import { UploadLayout } from '~/layouts';
 
+definePageMeta({ middleware: 'auth' });
+
 const { $userStore } = useNuxtApp();
 
 const router = useRouter();

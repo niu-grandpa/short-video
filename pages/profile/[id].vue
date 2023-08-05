@@ -77,11 +77,13 @@ import { storeToRefs } from 'pinia';
 import MainLayout from '~/layouts/MainLayout.vue';
 
 const { $profileStore, $userStore, $generalStore } = useNuxtApp();
-const { posts } = storeToRefs($profileStore);
+const { posts, allLikes } = storeToRefs($profileStore);
 
 const route = useRoute();
 
 const show = ref(false);
+
+definePageMeta({ middleware: 'auth' });
 
 onMounted(async () => {
   try {

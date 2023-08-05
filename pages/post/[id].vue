@@ -14,14 +14,14 @@
       <div v-if="$generalStore.ids.length > 1">
         <button
           :disabled="!isLoaded"
-          @click="loopThroughPostsUp()"
+          @click="loopThroughPostsUp"
           class="absolute z-20 right-4 top-4 flex items-center justify-center rounded-full bg-gray-700 p-1.5 hover:bg-gray-800">
           <Icon name="mdi:chevron-up" size="30" color="#FFFFFF" />
         </button>
 
         <button
           :disabled="!isLoaded"
-          @click="loopThroughPostsDown()"
+          @click="loopThroughPostsDown"
           class="absolute z-20 right-4 top-20 flex items-center justify-center rounded-full bg-gray-700 p-1.5 hover:bg-gray-800">
           <Icon name="mdi:chevron-down" size="30" color="#FFFFFF" />
         </button>
@@ -91,7 +91,7 @@
 
         <Icon
           v-if="$userStore.id === $generalStore.selectedPost.user.id"
-          @click="deletePost()"
+          @click="deletePost"
           class="cursor-pointer"
           name="material-symbols:delete-outline-sharp"
           size="25" />
@@ -138,7 +138,7 @@
         <div
           v-if="$generalStore.selectedPost.comments.length < 1"
           class="text-center mt-6 text-xl text-gray-500">
-          No comments...
+          暂无评论...
         </div>
 
         <div
@@ -206,17 +206,35 @@
 </template>
 
 <script setup>
+const { $generalStore, $userStore, $profileStore } = useNuxtApp();
+
 const route = useRoute();
 const router = useRouter();
 
-const video = ref(null);
-const isLoaded = ref(false);
-const comment = ref(null);
-const inputFocused = ref(false);
+definePageMeta({ middleware: 'auth' });
 
-onMounted(() => {
-  isLoaded.value = true;
-  video.value.play();
+let video = ref(null);
+let isLoaded = ref(false);
+let comment = ref(null);
+let inputFocused = ref(false);
+
+onMounted(async () => {
+  $generalStore.selectedPos = null;
+  try {
+    await $generalStore.getPostById(route.params.id);
+  } catch (error) {
+    if (error && error.response.status === 400) {
+      router.push('/');
+    }
+  }
+
+  video.value.addEventListener('loadeddata', e => {
+    if (e.target) {
+      setTimeout(() => {
+        isLoaded.value = true;
+      }, 500);
+    }
+  });
 });
 
 onBeforeUnmount(() => {
@@ -227,12 +245,109 @@ onBeforeUnmount(() => {
 
 watch(
   () => isLoaded.value,
-  isLoaded => {
-    if (isLoaded) {
-      setTimeout(() => {
-        video.value.play();
-      }, 500);
+  () => {
+    if (isLoaded.value) {
+      setTimeout(() => video.value.play(), 500);
     }
   }
 );
+
+const loopThroughPostsDown = () => {
+  setTimeout(() => {
+    let idArrayReversed = $generalStore.ids.reverse();
+    let isBreak = false;
+
+    for (let i = 0; i < idArrayReversed.length; i++) {
+      const id = idArrayReversed[i];
+      if (id < route.params.id) {
+        router.push(`/post/${id}`);
+        isBreak = true;
+        return;
+      }
+    }
+
+    if (!isBreak) {
+      router.push(`/post/${idArrayReversed[0]}`);
+    }
+  }, 300);
+};
+
+const loopThroughPostsUp = () => {
+  setTimeout(() => {
+    let isBreak = false;
+
+    for (let i = 0; i < $generalStore.ids.length; i++) {
+      const id = $generalStore.ids[i];
+      if (id > route.params.id) {
+        router.push(`/post/${id}`);
+        isBreak = true;
+        return;
+      }
+    }
+
+    if (!isBreak) {
+      router.push(`/post/${$generalStore.ids[0]}`);
+    }
+  }, 300);
+};
+
+const isLiked = computed(() => {
+  let res = $generalStore.selectedPost.likes.find(
+    like => like.user_id === $userStore.id
+  );
+  if (res) {
+    return true;
+  }
+  return false;
+});
+
+const likePost = async () => {
+  try {
+    await $userStore.likePost($generalStore.selectedPost, true);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const unlikePost = async () => {
+  try {
+    await $userStore.unlikePost($generalStore.selectedPost, true);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deletePost = async () => {
+  let res = confirm('Are you sure you want to delete this post?');
+  try {
+    if (res) {
+      await $userStore.deletePost($generalStore.selectedPost);
+      await $profileStore.getProfile($userStore.id);
+      router.push(`/profile/${$userStore.id}`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const addComment = async () => {
+  try {
+    await $userStore.addComment($generalStore.selectedPost, comment.value);
+    comment.value = null;
+    document.getElementById('Comments').scroll({ top: 0, behavior: 'smooth' });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteComment = async (post, commentId) => {
+  let res = confirm('Are you sure you want to delete this comment?');
+  try {
+    if (res) {
+      await $userStore.deleteComment(post, commentId);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
