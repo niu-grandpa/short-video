@@ -3,9 +3,8 @@
     id="TopNav"
     class="fixed bg-white z-30 flex items-center w-full border-b h-[61px]">
     <nav
-      :class="route.fullPath === '/' ? 'max-w-[1340px]' : ''"
-      class="flex items-center justify-between w-full px-6 mx-auto">
-      <div :class="route.fullPath === '/' ? 'w-[80%]' : 'lg:w-[20%] w-[70%]'">
+      class="max-w-[1340px] flex items-center justify-between w-full px-6 mx-auto">
+      <div class="lg:w-[20%] w-[70%]">
         <NuxtLink to="/">
           <img width="115" src="~/assets/images/tiktok-logo.png" />
         </NuxtLink>
@@ -16,8 +15,9 @@
         <input
           type="text"
           class="w-full pl-3 my-2 bg-transparent placeholder-[#838383] text-[15px] focus:outline-none"
-          placeholder="Search accounts" />
-        <div class="px-3 py-1 flex items-center border-l border-l-gray-300">
+          placeholder="搜索用户" />
+        <div
+          class="px-3 py-1 flex items-center border-l border-l-gray-300 cursor-pointer">
           <Icon name="ri:search-line" color="#A1A2A7" size="22" />
         </div>
       </div>
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-const { $userStore, $generalStore } = useNuxtApp();
+const { $userStore, $generalStore, $useAuthCallback } = useNuxtApp();
 
 const route = useRoute();
 const router = useRouter();
@@ -101,13 +101,10 @@ onBeforeUnmount(() => {
   document.removeEventListener('mouseup', onMouseup);
 });
 
-const onUpload = () => {
-  if ($userStore.id) {
-    router.push('/upload');
-  } else {
-    $generalStore.isLoginOpen = true;
-  }
-};
+const onUpload = $useAuthCallback(
+  () => ($generalStore.isLoginOpen = true),
+  '/upload'
+);
 
 const onLogout = async () => {
   try {

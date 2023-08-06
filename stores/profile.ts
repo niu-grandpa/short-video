@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import axios from '../plugins/axios';
+import UserIcon from '~/assets/images/user-placeholder.jpg';
+import axios from '~/plugins/axios';
 
 // @ts-ignore
 const $axios = axios().provide.axios;
@@ -21,12 +22,13 @@ export const useProfileStore = defineStore('profile', {
       this.allLikeCount();
 
       const { data } = await $axios.get(`/api/profiles/${_id}`);
-      const { id, name, bio, image, posts } = data[0];
+      const { posts, user } = data;
+      const { id, name, bio, image } = user[0];
 
       this.$state.id = id;
       this.$state.bio = bio;
       this.$state.name = name;
-      this.$state.image = image;
+      this.$state.image = UserIcon;
       this.$state.posts = posts;
     },
 

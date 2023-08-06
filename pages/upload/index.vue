@@ -1,4 +1,8 @@
 <template>
+  <Head>
+    <title>short-video 上传视频</title>
+  </Head>
+
   <UploadError :errorType="errorType" />
 
   <div

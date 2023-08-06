@@ -91,7 +91,7 @@
 const props = defineProps(['post']);
 const { post } = toRefs(props);
 
-const { $generalStore, $userStore } = useNuxtApp();
+const { $generalStore, $userStore, $useAuthCallback } = useNuxtApp();
 
 const router = useRouter();
 
@@ -121,13 +121,9 @@ onBeforeUnmount(() => {
   video.value.src = '';
 });
 
-const onIsLoggedIn = params => {
-  if (!$userStore.id) {
-    $generalStore.isLoginOpen = true;
-    return;
-  }
+const onIsLoggedIn = $useAuthCallback(params => {
   setTimeout(() => router.push(`/profile/${params.id}`), 200);
-};
+});
 
 const isLiked = computed(() => {
   const res = post.value.likes.find(like => like.user_id === $userStore.id);
@@ -149,13 +145,9 @@ const likePost = async post => {
   }
 };
 
-const onDisplayPost = () => {
-  if (!$userStore.id) {
-    $generalStore.isLoginOpen = true;
-    return;
-  }
+const onDisplayPost = $useAuthCallback(() => {
   $generalStore.setBackUrl('/');
   $generalStore.selectedPos = null;
   setTimeout(() => router.push(`/post/${post.id}`), 200);
-};
+});
 </script>

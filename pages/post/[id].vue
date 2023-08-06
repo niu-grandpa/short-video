@@ -1,9 +1,12 @@
 <template>
+  <Head>
+    <title>short-video 视频浏览</title>
+  </Head>
   <div
     id="PostPage"
     class="fixed lg:flex justify-between z-50 top-0 left-0 w-full h-full bg-black lg:overflow-hidden overflow-auto">
     <div
-      v-if="$generalStore.selectedPost"
+      v-if="$generalStore.selectedPos"
       class="lg:w-[calc(100%-540px)] h-full relative">
       <NuxtLink
         :href="$generalStore.isBackUrl"
@@ -33,9 +36,9 @@
         src="~/assets/images/tiktok-logo-small.png" />
 
       <video
-        v-if="$generalStore.selectedPost.video"
+        v-if="$generalStore.selectedPos.video"
         class="absolute object-cover w-full my-auto z-[-1] h-screen"
-        :src="$generalStore.selectedPost.video" />
+        :src="$generalStore.selectedPos.video" />
 
       <div
         v-if="!isLoaded"
@@ -48,62 +51,62 @@
       </div>
       <div class="bg-black bg-opacity-70 lg:min-w-[480px]">
         <video
-          v-if="$generalStore.selectedPost.video"
+          v-if="$generalStore.selectedPos.video"
           ref="video"
           loop
           muted
           class="h-screen mx-auto"
-          :src="$generalStore.selectedPost.video" />
+          :src="$generalStore.selectedPos.video" />
       </div>
     </div>
 
     <div
       id="InfoSection"
-      v-if="$generalStore.selectedPost"
+      v-if="$generalStore.selectedPos"
       class="lg:max-w-[550px] relative w-full h-full bg-white">
       <div class="py-7" />
 
       <div class="flex items-center justify-between px-8">
         <div class="flex items-center">
-          <NuxtLink :href="`/profile/${$generalStore.selectedPost.user.id}`">
+          <NuxtLink :href="`/profile/${$generalStore.selectedPos.user.id}`">
             <img
               class="rounded-full lg:mx-0 mx-auto"
               width="40"
-              :src="$generalStore.selectedPost.user.image" />
+              :src="$generalStore.selectedPos.user.image" />
           </NuxtLink>
           <div class="ml-3 pt-0.5">
             <div class="text-[17px] font-semibold">
               {{
                 $generalStore.allLowerCaseNoCaps(
-                  $generalStore.selectedPost.user.name
+                  $generalStore.selectedPos.user.name
                 )
               }}
             </div>
             <div class="text-[13px] -mt-5 font-light">
-              {{ $generalStore.selectedPost.user.name }}
+              {{ $generalStore.selectedPos.user.name }}
               <span class="relative -top-[2px] text-[30px] pr-0.5">.</span>
               <span class="font-medium">{{
-                $generalStore.selectedPost.created_at
+                $generalStore.selectedPos.created_at
               }}</span>
             </div>
           </div>
         </div>
 
         <Icon
-          v-if="$userStore.id === $generalStore.selectedPost.user.id"
+          v-if="$userStore.id === $generalStore.selectedPos.user.id"
           @click="deletePost"
           class="cursor-pointer"
           name="material-symbols:delete-outline-sharp"
           size="25" />
       </div>
 
-      <div class="px-8 mt-4 text-sm">{{ $generalStore.selectedPost.text }}</div>
+      <div class="px-8 mt-4 text-sm">{{ $generalStore.selectedPos.text }}</div>
 
       <div class="px-8 mt-4 text-sm font-bold">
         <Icon name="mdi:music" size="17" />
         original sound -
         {{
-          $generalStore.allLowerCaseNoCaps($generalStore.selectedPost.user.name)
+          $generalStore.allLowerCaseNoCaps($generalStore.selectedPos.user.name)
         }}
       </div>
 
@@ -118,7 +121,7 @@
               :color="isLiked ? '#F02C56' : ''" />
           </button>
           <span class="text-xs pl-2 pr-4 text-gray-800 font-semibold">
-            {{ $generalStore.selectedPost.likes.length }}
+            {{ $generalStore.selectedPos.likes.length }}
           </span>
         </div>
 
@@ -136,14 +139,14 @@
         <div class="pt-2" />
 
         <div
-          v-if="$generalStore.selectedPost.comments.length < 1"
+          v-if="$generalStore.selectedPos.comments.length < 1"
           class="text-center mt-6 text-xl text-gray-500">
           暂无评论...
         </div>
 
         <div
           v-else
-          v-for="comment in $generalStore.selectedPost.comments"
+          v-for="comment in $generalStore.selectedPos.comments"
           :key="comment"
           class="flex items-center justify-between px-8 mt-4">
           <div class="flex items-center relative w-full">
@@ -159,7 +162,7 @@
                 {{ comment.user.name }}
                 <Icon
                   v-if="$userStore.id === comment.user.id"
-                  @click="deleteComment($generalStore.selectedPost, comment.id)"
+                  @click="deleteComment($generalStore.selectedPos, comment.id)"
                   class="cursor-pointer"
                   name="material-symbols:delete-outline-sharp"
                   size="25" />
@@ -292,7 +295,7 @@ const loopThroughPostsUp = () => {
 };
 
 const isLiked = computed(() => {
-  let res = $generalStore.selectedPost.likes.find(
+  let res = $generalStore.selectedPos.likes.find(
     like => like.user_id === $userStore.id
   );
   if (res) {
@@ -303,7 +306,7 @@ const isLiked = computed(() => {
 
 const likePost = async () => {
   try {
-    await $userStore.likePost($generalStore.selectedPost, true);
+    await $userStore.likePost($generalStore.selectedPos, true);
   } catch (error) {
     console.log(error);
   }
@@ -311,7 +314,7 @@ const likePost = async () => {
 
 const unlikePost = async () => {
   try {
-    await $userStore.unlikePost($generalStore.selectedPost, true);
+    await $userStore.unlikePost($generalStore.selectedPos, true);
   } catch (error) {
     console.log(error);
   }
@@ -321,7 +324,7 @@ const deletePost = async () => {
   let res = confirm('Are you sure you want to delete this post?');
   try {
     if (res) {
-      await $userStore.deletePost($generalStore.selectedPost);
+      await $userStore.deletePost($generalStore.selectedPos);
       await $profileStore.getProfile($userStore.id);
       router.push(`/profile/${$userStore.id}`);
     }
@@ -332,7 +335,7 @@ const deletePost = async () => {
 
 const addComment = async () => {
   try {
-    await $userStore.addComment($generalStore.selectedPost, comment.value);
+    await $userStore.addComment($generalStore.selectedPos, comment.value);
     comment.value = null;
     document.getElementById('Comments').scroll({ top: 0, behavior: 'smooth' });
   } catch (error) {

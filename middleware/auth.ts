@@ -1,5 +1,5 @@
-import { useGeneralStore } from 'stores/general';
-import { useUserStore } from 'stores/user';
+import { useGeneralStore } from '~/stores/general';
+import { useUserStore } from '~/stores/user';
 
 // 用户权限检测
 export default defineNuxtRouteMiddleware((to, from) => {

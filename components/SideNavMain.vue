@@ -1,14 +1,15 @@
 <template>
-  <div
+  <section
     id="SideNavMain"
-    :class="route.pathname === '/' ? 'lg:w-[310px]' : 'lg:w-[220px]'"
-    class="z-20 bg-white pt-[70px] h-full lg:border-r-0 border-r w-[75px]">
+    class="lg:w-[220px] z-20 bg-white pt-[70px] h-full lg:border-r-0 border-r w-[75px]">
     <div class="lg:w-[220px] w-[75px] h-full mx-auto fixed border-r">
       <NuxtLink to="/">
-        <MenuItem title="主页" icon="For You" color="#F02C56" size="30" />
+        <MenuItem title="首页" icon="For You" color="#F02C56" size="30" />
       </NuxtLink>
-      <MenuItem title="关注" icon="Following" color="#000000" size="27" />
-      <MenuItem title="直播" icon="LIVE" color="#000000" size="27" />
+      <MenuItem title="好友" icon="Following" color="#000000" size="27" />
+      <NuxtLink to="/live">
+        <MenuItem title="直播" icon="LIVE" color="#000000" size="27" />
+      </NuxtLink>
 
       <div class="border-b lg:ml-2 mt-2" />
 
@@ -60,20 +61,16 @@
 
       <div class="pb-14" />
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
-const { $generalStore, $userStore } = useNuxtApp();
+const { $generalStore, $userStore, $useAuthCallback } = useNuxtApp();
 
 const route = useRoute();
 const router = useRouter();
 
-const onIsLoggedIn = params => {
-  if (!$userStore.id) {
-    $generalStore.isLoginOpen = true;
-    return;
-  }
+const onIsLoggedIn = $useAuthCallback(params => {
   setTimeout(() => router.push(`/profile/${params.id}`), 200);
-};
+});
 </script>

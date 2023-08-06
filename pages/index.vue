@@ -1,11 +1,15 @@
 <template>
+  <Head>
+    <title>short-video 首页</title>
+  </Head>
   <MainLayout>
-    <section class="w-[100%] flex flex-wrap pt-[80px] ml-[48px]">
+    <section class="w-[100%] flex flex-wrap">
+      121
+
       <!-- todo 滚动加载优化 -->
-      <PostMain />
-      <!-- <template v-for="post in $generalStore.posts" :key="post">
+      <template v-for="post in $generalStore.posts" :key="post">
         <PostMain v-if="post" :post="post" />
-      </template> -->
+      </template>
     </section>
   </MainLayout>
 </template>

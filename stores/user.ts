@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
+import UserIcon from '~/assets/images/user-placeholder.jpg';
 import axios from '../plugins/axios';
 import { useGeneralStore } from './general';
-
 // @ts-ignore
 const $axios = axios().provide.axios;
 
@@ -28,7 +28,7 @@ export const useUserStore = defineStore('user', {
       this.$state.id = id;
       this.$state.bio = bio;
       this.$state.name = name;
-      this.$state.image = image;
+      this.$state.image = UserIcon;
     },
 
     async logout() {
