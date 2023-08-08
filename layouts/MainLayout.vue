@@ -1,7 +1,6 @@
 <template>
   <ALayout>
     <Header />
-    <div class="h-[61px]" />
     <ALayout hasSider>
       <SideMain />
       <ContentMain>

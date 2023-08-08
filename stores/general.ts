@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import axios from '../plugins/axios';
-import { useUserStore } from './user';
 
 // @ts-ignore
 const $axios = axios().provide.axios;
@@ -27,7 +26,6 @@ export const useGeneralStore = defineStore('general', {
             case 401: // 未登录
             case 419: // seesion过期
             case 503: // 服务器问题
-              useUserStore().restUser();
               window.location.href = '/';
               break;
             case 500:

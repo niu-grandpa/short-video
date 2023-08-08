@@ -13,6 +13,7 @@
       <ASpace>
         <AButton
           size="large"
+          @click="onToUpload"
           class="flex items-center px-3 py-[6px]"
           style="height: 36px; padding: 0 22px">
           <VideoCameraAddOutlined class="text-[20px]" />
@@ -23,14 +24,23 @@
           size="large"
           danger
           @click="() => ($generalStore.isLoginOpen = true)"
-          style="height: 36px; padding: 0 22px"
-          >登录
+          style="height: 36px; padding: 0 22px">
+          登录
         </AButton>
       </ASpace>
     </nav>
   </ALayoutHeader>
+  <div class="h-[61px]" />
 </template>
 
 <script setup lang="ts">
+import { useASDCallback } from '@/hooks';
+
 const { $generalStore } = useNuxtApp();
+
+const router = useRouter();
+
+const onToUpload = useASDCallback(() => {
+  router.push('/upload');
+});
 </script>

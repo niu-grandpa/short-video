@@ -2,8 +2,7 @@
   <AModal
     :width="420"
     v-model:open="$generalStore.isLoginOpen"
-    title="用户登录"
-    :keyboard="false"
+    title="Short Video 登录"
     :maskClosable="false"
     destroyOnClose
     :footer="false"

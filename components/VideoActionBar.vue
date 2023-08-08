@@ -1,5 +1,5 @@
 <template>
-  <ul class="absolute bottom-[52px] right-[10px] text-white z-20">
+  <ul class="absolute bottom-[64px] right-[10px] text-white z-20">
     <li class="text-center cursor-pointer mb-[16px]" @click="onLike">
       <LikeTwoTone
         class="text-2xl"
@@ -20,7 +20,10 @@
 </template>
 
 <script setup lang="ts">
+import { useASDCallback } from '@/hooks';
+
 const props = defineProps<{
+  postId: number;
   likes: number;
   comments: number;
   star: number;
@@ -32,17 +35,17 @@ const router = useRouter();
 const isLike = ref(false);
 const isStar = ref(false);
 
-const onLike = () => {
+const onLike = useASDCallback(() => {
   isLike.value = !isLike.value;
-};
+});
 
-const onComment = () => {
+const onComment = useASDCallback(() => {
   if (route.fullPath === '/') {
-    router.push(`/post-video/${1}`);
+    router.push(`/post-video/${props.postId}`);
   }
-};
+});
 
-const onFollow = () => {
+const onFollow = useASDCallback(() => {
   isStar.value = !isStar.value;
-};
+});
 </script>
