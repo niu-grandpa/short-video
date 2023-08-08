@@ -5,38 +5,15 @@ import { useUserStore } from './user';
 // @ts-ignore
 const $axios = axios().provide.axios;
 
-// 用户通用数据流
+// 通用数据流
 export const useGeneralStore = defineStore('general', {
   persist: true,
 
   state: () => ({
     isLoginOpen: false,
-    isEditProfileOpen: false,
-    selectedPos: null,
-    ids: null,
-    isBackUrl: '/',
-    posts: [],
-    suggested: null,
-    following: null,
   }),
 
   actions: {
-    allLowerCaseNoCaps: (str: string) => str.split(' ').join('').toLowerCase(),
-
-    async getRandomUsers(type: 'suggested' | 'following') {
-      const res = await $axios.get(`/api/get-random-users`);
-      type === 'suggested' && (this.suggested = res.data.suggested);
-      type === 'following' && (this.following = res.data.following);
-    },
-
-    bodySwitch(val: boolean) {
-      if (val) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = 'visible';
-      }
-    },
-
     // 检查seesion过期
     async hasSessionExpired() {
       // 当进入页面时，调用的任何api都会被axios拦截器拦截
@@ -61,31 +38,6 @@ export const useGeneralStore = defineStore('general', {
           }
         }
       );
-    },
-
-    setBackUrl(url: string) {
-      this.isBackUrl = url;
-    },
-
-    updateSideMenuImage(array: any[], user: any) {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i].id === user.id) {
-          array[i].image = user.image;
-          break;
-        }
-      }
-    },
-
-    async getAllUsersAndPosts() {
-      const { data } = await $axios.get('/api/home');
-      this.posts = data;
-    },
-
-    async getPostById(id: number) {
-      let res = await $axios.get(`/api/posts/${id}`);
-
-      this.$state.selectedPos = res.data.post[0];
-      this.$state.ids = res.data.ids;
     },
   },
 });

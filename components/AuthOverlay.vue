@@ -1,36 +1,127 @@
 <template>
-  <div
-    id="AuthOverlay"
-    class="fixed flex items-center justify-center z-50 top-0 left-0 w-full h-full bg-black bg-opacity-50">
-    <div class="relative bg-white w-full max-w-[470px] h-[70%] p-4 rounded-lg">
-      <div class="w-full flex justify-end">
-        <button
-          @click="$generalStore.isLoginOpen = false"
-          class="p-1.5 rounded-full bg-gray-100">
-          <Icon name="mdi:close" size="26" />
-        </button>
-      </div>
+  <AModal
+    :width="420"
+    v-model:open="$generalStore.isLoginOpen"
+    title="用户登录"
+    :keyboard="false"
+    :maskClosable="false"
+    destroyOnClose
+    :footer="false"
+    class="relative"
+    @cancel="() => ($generalStore.isLoginOpen = false)"
+    :confirm-loading="confirmLoading">
+    <AForm
+      ref="formRef"
+      size="large"
+      :rules="rules"
+      layout="vertical"
+      :model="formState"
+      name="normal_login"
+      @finish="onFinish">
+      <AFormItem
+        has-feedback
+        class="mb-[12px]"
+        label="手机号码"
+        name="phoneNumber">
+        <AInput
+          v-model:value="formState.phoneNumber"
+          placeholder="您的手机号码">
+          <template #prefix>
+            <MobileOutlined />
+          </template>
+        </AInput>
+      </AFormItem>
 
-      <Login v-if="!isRegister" />
-      <Register v-else />
+      <AFormItem has-feedback label="验证码" class="mb-[6px]" name="code">
+        <AInput
+          :disabled="disabled"
+          v-model:value="formState.code"
+          autocomplete="off"
+          placeholder="输入验证码">
+          <template #prefix>
+            <NumberOutlined />
+          </template>
+          <template #suffix>
+            <AButton type="text" size="small" :disabled="disabled">
+              获取验证码
+            </AButton>
+          </template>
+        </AInput>
+      </AFormItem>
 
-      <div
-        class="absolute flex items-center justify-center py-5 left-0 bottom-0 border-t w-full">
-        <span class="text-[14px] text-gray-600"
-          >{{ isRegister ? '已有账号' : '还未拥有账号' }}？</span
-        >
-        <button
-          @click="isRegister = !isRegister"
-          class="text-[14px] text-[#F02C56] font-semibold pl-1">
-          <span v-if="isRegister">登录</span>
-          <span v-else>注册</span>
-        </button>
-      </div>
-    </div>
-  </div>
+      <AFormItem class="mb-[16px]">
+        <AFormItem name="remember" no-style>
+          <ACheckbox v-model:checked="formState.remember">自动登录</ACheckbox>
+        </AFormItem>
+      </AFormItem>
+
+      <AFormItem>
+        <AButton
+          :disabled="disabled"
+          danger
+          :loading="confirmLoading"
+          type="primary"
+          html-type="submit"
+          block>
+          登录
+        </AButton>
+      </AFormItem>
+    </AForm>
+
+    <p class="text-center text-gray-500 text-[10px]">
+      提示：如果用户不存在则登录即代表注册
+    </p>
+  </AModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { FormInstance, Rule } from 'ant-design-vue/es/form';
+
+interface FormState {
+  phoneNumber: string;
+  code: string;
+  remember: boolean;
+}
+
 const { $generalStore } = useNuxtApp();
-const isRegister = ref(false);
+
+const formRef = ref<FormInstance>();
+const confirmLoading = ref(false);
+
+const formState = reactive<FormState>({
+  phoneNumber: '',
+  code: '',
+  remember: true,
+});
+
+const disabled = computed(() => !utils.testPhoneNumber(formState.phoneNumber));
+
+const validatePass = async (_rule: Rule, value: string) => {
+  if (value === '') {
+    return Promise.reject('手机号码不能为空!');
+  } else if (value !== '' && !utils.testPhoneNumber(value)) {
+    return Promise.reject('请输入有效的手机号码');
+  } else {
+    return Promise.resolve();
+  }
+};
+const validatePass2 = async (_rule: Rule, value: string) => {
+  if (value === '') {
+    return Promise.reject('请输入验证码!');
+  } else if (value.length < 6) {
+    return Promise.reject('请输入6位验证码!');
+  } else {
+    return Promise.resolve();
+  }
+};
+
+const rules: Record<string, Rule[]> = {
+  phoneNumber: [{ required: true, validator: validatePass }],
+  code: [{ required: true, validator: validatePass2 }],
+};
+
+const onFinish = async (values: any) => {
+  confirmLoading.value = true;
+  console.log('Success:', values);
+};
 </script>

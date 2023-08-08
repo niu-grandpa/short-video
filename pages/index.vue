@@ -3,7 +3,9 @@
     <title>short-video 首页</title>
   </Head>
   <MainLayout>
-    <PostVideo />
+    <ARow class="my-[18px]" :gutter="[48, 48]" style="margin-right: 0">
+      <ACol :span="6"><PostVideo /></ACol>
+    </ARow>
   </MainLayout>
 </template>
 

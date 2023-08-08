@@ -22,6 +22,7 @@
           type="primary"
           size="large"
           danger
+          @click="() => ($generalStore.isLoginOpen = true)"
           style="height: 36px; padding: 0 22px"
           >登录
         </AButton>
@@ -29,3 +30,7 @@
     </nav>
   </ALayoutHeader>
 </template>
+
+<script setup lang="ts">
+const { $generalStore } = useNuxtApp();
+</script>

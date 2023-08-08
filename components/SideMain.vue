@@ -10,7 +10,7 @@
             <div class="flex items-center text-[17px] font-semibold">
               <Icon name="mdi:home" :color="color1" size="30" />
               <span class="lg:block hidden pl-[9px]" :class="`text-[${color1}]`"
-                >主页</span
+                >首页</span
               >
             </div>
           </a-menu-item>
