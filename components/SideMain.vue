@@ -5,34 +5,26 @@
       :width="siderWidth"
       style="height: calc(100vh - 61px); padding-top: 8px">
       <ClientOnly>
-        <a-menu v-model:selectedKeys="currentKey" @click="onChangeView">
-          <a-menu-item key="home">
+        <AMenu v-model:selectedKeys="currentKey" @click="onChangeView">
+          <AMenuItem key="home">
             <div class="flex items-center text-[17px] font-semibold">
-              <Icon name="mdi:home" :color="color1" size="30" />
-              <span
-                class="lg:block hidden pl-[9px]"
-                :class="`text-[${color1}]`">
-                首页
-              </span>
+              <HomeOutlined class="mx-[4px]" style="font-size: 24px" />
+              <span class="lg:block hidden">首页</span>
             </div>
-          </a-menu-item>
-          <a-menu-item key="following">
+          </AMenuItem>
+          <AMenuItem key="following">
             <div class="flex items-center text-[17px] font-semibold">
-              <Icon name="ci:group" :color="color2" size="30" />
-              <span class="lg:block hidden pl-[9px]" :class="`text-[${color2}]`"
-                >关注</span
-              >
+              <TeamOutlined class="mx-[4px]" style="font-size: 24px" />
+              <span class="lg:block hidden">关注</span>
             </div>
-          </a-menu-item>
-          <a-menu-item key="live">
+          </AMenuItem>
+          <AMenuItem key="live">
             <div class="flex items-center text-[17px] font-semibold">
-              <Icon name="ri:live-line" :color="color3" size="30" />
-              <span class="lg:block hidden pl-[9px]" :class="`text-[${color3}]`"
-                >直播</span
-              >
+              <VideoCameraOutlined class="mx-[4px]" style="font-size: 24px" />
+              <span class="lg:block hidden">直播</span>
             </div>
-          </a-menu-item>
-        </a-menu>
+          </AMenuItem>
+        </AMenu>
       </ClientOnly>
     </ALayoutSider>
   </AAffix>
@@ -44,16 +36,6 @@ const router = useRouter();
 
 const currentKey = ref<string[]>([]);
 const siderWidth = ref<number>(220);
-
-const color1 = computed(() =>
-  currentKey.value[0] === 'home' ? '#F02C56' : '#444444'
-);
-const color2 = computed(() =>
-  currentKey.value[0] === 'following' ? '#F02C56' : '#444444'
-);
-const color3 = computed(() =>
-  currentKey.value[0] === 'live' ? '#F02C56' : '#444444'
-);
 
 watchEffect(() => {
   const key = route.fullPath === '/' ? 'home' : route.fullPath.substring(1);

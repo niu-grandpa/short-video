@@ -21,8 +21,7 @@
         </AButton>
         <AButton
           type="primary"
-          danger
-          class="px-[30px] pb-[30px] text-[16px]"
+          class="px-[30px] pb-[30px] text-[16px] bg-[#1677ff]"
           @click="() => ($generalStore.isLoginOpen = true)">
           登录
         </AButton>

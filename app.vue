@@ -1,14 +1,11 @@
 <template>
   <NuxtPage />
-  <!-- 权鉴登录 -->
-  <ClientOnly>
-    <AuthOverlay />
-    <!-- <EditProfileOverlay  /> -->
-  </ClientOnly>
+  <AuthOverlay />
+  <EditProfileOverlay />
 </template>
 
 <script setup>
-const { $generalStore, $userStore } = useNuxtApp();
+const { $userStore } = useNuxtApp();
 
 // 检查session是否过期
 onMounted(async () => {

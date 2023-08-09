@@ -11,10 +11,10 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     uid: '',
     icon: '',
-    bio: '',
     token: '',
     gender: -1,
     nickname: '',
+    user_sign: '',
   }),
 
   actions: {},
