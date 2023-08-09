@@ -9,9 +9,11 @@
           <a-menu-item key="home">
             <div class="flex items-center text-[17px] font-semibold">
               <Icon name="mdi:home" :color="color1" size="30" />
-              <span class="lg:block hidden pl-[9px]" :class="`text-[${color1}]`"
-                >首页</span
-              >
+              <span
+                class="lg:block hidden pl-[9px]"
+                :class="`text-[${color1}]`">
+                首页
+              </span>
             </div>
           </a-menu-item>
           <a-menu-item key="following">
@@ -44,13 +46,13 @@ const currentKey = ref<string[]>([]);
 const siderWidth = ref<number>(220);
 
 const color1 = computed(() =>
-  currentKey.value[0] === 'home' ? '#F02C56' : '#000000'
+  currentKey.value[0] === 'home' ? '#F02C56' : '#444444'
 );
 const color2 = computed(() =>
-  currentKey.value[0] === 'following' ? '#F02C56' : '#000000'
+  currentKey.value[0] === 'following' ? '#F02C56' : '#444444'
 );
 const color3 = computed(() =>
-  currentKey.value[0] === 'live' ? '#F02C56' : '#000000'
+  currentKey.value[0] === 'live' ? '#F02C56' : '#444444'
 );
 
 watchEffect(() => {

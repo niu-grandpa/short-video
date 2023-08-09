@@ -3,6 +3,9 @@ const testPhoneNumber = (val: string) =>
     val
   );
 
+const addVideoWatermark = () => {};
+
 export default {
   testPhoneNumber,
+  addVideoWatermark,
 };

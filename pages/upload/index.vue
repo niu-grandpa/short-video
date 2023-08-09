@@ -13,7 +13,7 @@
       <ARow>
         <ACol :span="6">
           <div
-            v-show="!fileURL"
+            v-show="!videoURL"
             class="md:mx-0 mx-auto mt-4 mb-6 w-full max-w-[260px] h-[470px] text-center">
             <AUploadDragger
               :maxCount="1"
@@ -36,22 +36,19 @@
           </div>
 
           <section
-            v-show="fileURL"
+            v-show="videoURL"
             class="md:mx-0 mx-auto mt-4 md:mb-12 mb-16 flex items-center justify-center w-full max-w-[260px] h-[540px] p-3 rounded-2xl cursor-pointer relative">
             <div class="bg-black h-full w-full" />
             <img
               class="absolute z-20 pointer-events-none"
               src="~/assets/images/mobile-case.png" />
-            <img
-              class="absolute right-4 bottom-6 z-20"
-              width="90"
-              src="~/assets/images/tiktok-logo-white.png" />
             <video
-              autoplay
               loop
               muted
-              class="absolute rounded-xl object-cover z-10 p-[13px] w-full h-full"
-              :src="fileURL" />
+              autoplay
+              :src="videoURL"
+              ref="videoRef"
+              class="absolute rounded-xl object-cover z-10 p-[13px] w-full h-full" />
 
             <div
               class="absolute -bottom-12 flex items-center justify-between z-50 rounded-xl border w-full p-2 border-gray-300">
@@ -131,35 +128,28 @@ import { message } from 'ant-design-vue';
 import { FileType } from 'ant-design-vue/es/upload/interface';
 import { UploadLayout } from '~/layouts';
 
-definePageMeta({ middleware: 'auth' });
+// definePageMeta({ middleware: 'auth' });
 
 const { $userStore } = useNuxtApp();
 
 const router = useRouter();
-
+// 代表200MB，单位bt
 const maxSize = 209715200;
 
 const caption = ref('');
 const isUploading = ref(false);
 
-const fileURL = ref('');
+const inputRef = ref<HTMLSpanElement | null>(null);
+const videoRef = ref<HTMLVideoElement | null>(null);
+
+const videoURL = ref('');
 const filename = ref('');
 const fileBlob = ref<Blob | null>(null);
 const fileList = ref<FileType[]>([]);
-const fileRef = ref<HTMLSpanElement | null>(null);
 
 onMounted(() => {
-  fileRef.value = document.querySelector('.ant-upload-btn');
+  inputRef.value = document.querySelector('.ant-upload-btn');
 });
-
-const addWatermark = (file: FileType) => {
-  // todo fileBlob.value = xxxxx
-};
-
-const createPreviewURL = () => {
-  const url = URL.createObjectURL(fileBlob.value);
-  fileURL.value = url;
-};
 
 const onBeforeUpload = (file: FileType) => {
   if (file.size > maxSize) {
@@ -167,8 +157,8 @@ const onBeforeUpload = (file: FileType) => {
     return false;
   }
   return new Promise((_, reject) => {
-    addWatermark(file);
-    createPreviewURL();
+    videoURL.value = URL.createObjectURL(file);
+
     reject();
   });
 };
@@ -176,7 +166,7 @@ const onBeforeUpload = (file: FileType) => {
 // 处理上传数据格式
 const handleFormData = () => {
   const data = new FormData();
-  data.append('video', fileBlob.value);
+  data.append('video', fileBlob.value!);
   data.append('caption', caption.value);
   return data;
 };
@@ -198,6 +188,7 @@ const onPostVideo = async () => {
   handleFormData();
 
   message.success('上传成功');
+
   setTimeout(() => {
     onReset();
     router.push(`/profile/${1}`);
@@ -210,15 +201,14 @@ const onReject = () => {
 
 const onReset = () => {
   caption.value = '';
-  fileURL.value = '';
+  videoURL.value = '';
   fileBlob.value = null;
   fileList.value.length = 0;
   isUploading.value = false;
-  fileData.value = undefined;
 };
 
 const onChooseFile = () => {
   onReset();
-  fileRef.value?.click();
+  inputRef.value?.click();
 };
 </script>

@@ -2,13 +2,17 @@
   <AModal
     :width="420"
     v-model:open="$generalStore.isLoginOpen"
-    title="Short Video 登录"
     :maskClosable="false"
     destroyOnClose
     :footer="false"
     class="relative"
     @cancel="() => ($generalStore.isLoginOpen = false)"
     :confirm-loading="confirmLoading">
+    <template #title>
+      <ATypographyTitle :level="4" class="text-center">
+        请先登录
+      </ATypographyTitle>
+    </template>
     <AForm
       ref="formRef"
       size="large"

@@ -21,10 +21,9 @@
         </AButton>
         <AButton
           type="primary"
-          size="large"
           danger
-          @click="() => ($generalStore.isLoginOpen = true)"
-          style="height: 36px; padding: 0 22px">
+          class="px-[30px] pb-[30px] text-[16px]"
+          @click="() => ($generalStore.isLoginOpen = true)">
           登录
         </AButton>
       </ASpace>
