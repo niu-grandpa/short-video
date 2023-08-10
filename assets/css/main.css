@@ -5,3 +5,7 @@
 .ant-btn-primary {
   background-color: #1677ff !important;
 }
+
+.ant-btn-primary:disabled {
+  background-color: #0000000a !important;
+}

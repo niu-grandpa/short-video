@@ -61,7 +61,6 @@
       <AFormItem>
         <AButton
           :disabled="disabled"
-          danger
           :loading="confirmLoading"
           type="primary"
           html-type="submit"

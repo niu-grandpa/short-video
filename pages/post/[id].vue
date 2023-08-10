@@ -1,6 +1,6 @@
 <template>
   <ARow class="overflow-hidden">
-    <ACol :span="17" class="relative">
+    <ACol :span="16" class="relative">
       <ASpace
         direction="vertical"
         class="absolute top-[28px] right-[28px] z-20">
@@ -23,14 +23,15 @@
       </section>
 
       <video
+        loop
         controls
         autoplay
-        loop
+        ref="videoRef"
         src="~/public/video.mp4"
         class="object-cover w-full h-[100vh]" />
     </ACol>
 
-    <ACol :span="7" class="p-[12px] overflow-auto max-h-[calc(100vh-44px)]">
+    <ACol :span="8" class="p-[12px] overflow-auto max-h-[calc(100vh-44px)]">
       <Comment />
     </ACol>
   </ARow>
@@ -38,4 +39,15 @@
 
 <script setup lang="ts">
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
+
+const videoRef = ref<HTMLVideoElement | null>(null);
+
+onMounted(() => {
+  const elm = videoRef.value;
+  if (elm) {
+    elm.onloadeddata = () => {
+      elm.play();
+    };
+  }
+});
 </script>

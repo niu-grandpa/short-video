@@ -11,37 +11,23 @@
         </ACol>
 
         <ACol :span="22">
-          <ATypographyTitle :level="3" class="flex items-center">
-            <template v-if="isSelf">
-              <template v-if="!isEditName">
-                <span ref="nameInputRef">
-                  {{ nickname }}
-                </span>
-                <EditOutlined
-                  class="ml-[12px] cursor-pointer"
-                  title="修改昵称"
-                  @click.stop="() => (isEditName = true)" />
-              </template>
-              <AInput
-                v-else
-                @click.stop=""
-                :maxlength="17"
-                v-model:value="nickname"
-                :style="{ width: `${nameInputRef?.offsetWidth}px` }" />
-            </template>
-
-            <span v-else ref="nameInputRef">
-              {{ nickname }}
-            </span>
-
+          <div class="flex">
+            <ClientOnly>
+              <ATypographyTitle
+                :level="3"
+                :editable="{ maxlength: 36 }"
+                v-model:content="nickname">
+                {{ nickname }}
+              </ATypographyTitle>
+            </ClientOnly>
             <span
               v-if="$profileStore.gender !== -1"
-              class="ml-[12px] flex items-center"
+              class="relative left-[18px] top-[-6px] text-[22px]"
               :class="`text-[${isMan ? ' #1890ff' : 'red'}]`">
               <ManOutlined v-if="isMan" />
               <WomanOutlined v-else />
             </span>
-          </ATypographyTitle>
+          </div>
 
           <section class="flex w-full items-center justify-between">
             <template v-if="isSelf">
