@@ -10,12 +10,15 @@ export const useUserStore = defineStore('user', {
 
   state: () => ({
     uid: '',
-    icon: '',
     token: '',
-    gender: -1,
-    nickname: '',
-    user_sign: '',
+    posts: [],
   }),
 
-  actions: {},
+  actions: {
+    restData() {
+      this.$state.uid = '';
+      this.$state.token = '';
+      this.$state.posts.length = 0;
+    },
+  },
 });

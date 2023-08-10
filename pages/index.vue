@@ -4,7 +4,7 @@
   </Head>
   <MainLayout>
     <ARow class="my-[18px]" :gutter="[48, 48]" style="margin-right: 0">
-      <ACol :span="6"><PostVideo /></ACol>
+      <ACol :span="6"><VideoPreview /></ACol>
     </ARow>
   </MainLayout>
 </template>

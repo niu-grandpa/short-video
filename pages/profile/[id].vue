@@ -1,27 +1,46 @@
 <template>
   <Head>
-    <title>{{ $userStore.nickname }}的个人空间_short-viedo</title>
+    <title>{{ $profileStore.nickname }}的个人空间_short-viedo</title>
   </Head>
 
   <MainLayout>
     <ACard class="w-[95%] m-auto border-0">
       <ARow>
-        <ACol :span="2">
-          <AAvatar
-            class="mt-[3px]"
-            :src="$userStore.icon"
-            :size="{ xs: 24, sm: 32, md: 40, lg: 56, xl: 70, xxl: 90 }" />
+        <ACol :span="2" class="relative">
+          <AvatarWithUpload :src="$profileStore.icon" @change="onImgChange" />
         </ACol>
 
         <ACol :span="22">
-          <ATypographyTitle :level="3">
-            {{ $userStore.nickname || '用户名' }}
-            <sup
-              v-if="$userStore.gender !== -1"
+          <ATypographyTitle :level="3" class="flex items-center">
+            <template v-if="isSelf">
+              <template v-if="!isEditName">
+                <span ref="nameInputRef">
+                  {{ nickname }}
+                </span>
+                <EditOutlined
+                  class="ml-[12px] cursor-pointer"
+                  title="修改昵称"
+                  @click.stop="() => (isEditName = true)" />
+              </template>
+              <AInput
+                v-else
+                @click.stop=""
+                :maxlength="17"
+                v-model:value="nickname"
+                :style="{ width: `${nameInputRef?.offsetWidth}px` }" />
+            </template>
+
+            <span v-else ref="nameInputRef">
+              {{ nickname }}
+            </span>
+
+            <span
+              v-if="$profileStore.gender !== -1"
+              class="ml-[12px] flex items-center"
               :class="`text-[${isMan ? ' #1890ff' : 'red'}]`">
               <ManOutlined v-if="isMan" />
               <WomanOutlined v-else />
-            </sup>
+            </span>
           </ATypographyTitle>
 
           <section class="flex w-full items-center justify-between">
@@ -30,16 +49,9 @@
                 v-model:value="user_sign"
                 placeholder="编辑个性签名"
                 class="w-[60%] ml-[-8px] border-0 hover:border" />
-              <ASpace>
-                <AButton class="flex items-center">
-                  <SettingOutlined />设置
-                </AButton>
-                <AButton
-                  class="flex items-center"
-                  @click="() => ($generalStore.isEditOpen = true)">
-                  <EditOutlined />编辑个人信息
-                </AButton>
-              </ASpace>
+              <AButton class="flex items-center">
+                <SettingOutlined />设置
+              </AButton>
             </template>
 
             <template v-else>
@@ -47,10 +59,7 @@
                 {{ user_sign || '该用户很懒，没有留下任何签名' }}
               </ATypographyText>
               <ASpace>
-                <AButton
-                  :disabled="false"
-                  type="primary"
-                  class="px-[24px] bg-[#1677ff]">
+                <AButton :disabled="false" type="primary" class="px-[24px]">
                   关注
                 </AButton>
                 <AButton>发消息</AButton>
@@ -76,8 +85,7 @@
                 <LockFilled />视频
               </p>
             </template>
-
-            Content of Tab Pane 1
+            <UserVideo />
           </ATabPane>
 
           <ATabPane key="following" disabled>
@@ -86,8 +94,7 @@
                 <LockFilled />已收藏
               </p>
             </template>
-
-            Content of Tab Pane 2
+            <UserVideo />
           </ATabPane>
         </ATabs>
       </section>
@@ -100,15 +107,45 @@ import MainLayout from '~/layouts/MainLayout.vue';
 
 // definePageMeta({ middleware: 'auth' });
 
-const { $userStore, $generalStore } = useNuxtApp();
-
-$generalStore.isEditOpen = true;
+const { $userStore, $profileStore } = useNuxtApp();
 
 const route = useRoute();
 
-const isMan = computed(() => $userStore.gender === 0);
+const isMan = computed(() => $profileStore.gender === 0);
 const isSelf = computed(() => $userStore.uid === route.params.id);
 
-const user_sign = ref($userStore.user_sign);
 const activeKey = ref<'video' | 'following'>('video');
+const nameInputRef = ref<HTMLSpanElement | null>(null);
+
+const user_sign = ref($profileStore.user_sign);
+const nickname = ref($profileStore.nickname || '用户名');
+
+const isEditName = ref(false);
+
+const onRename = (e: any) => {
+  if (!e.target.contains(nameInputRef.value)) {
+    isEditName.value = false;
+    $profileStore.nickname = nickname.value;
+  }
+};
+
+watch(
+  () => isEditName.value,
+  newVal => {
+    if (newVal) {
+      document.body.addEventListener('click', onRename);
+    } else {
+      document.body.removeEventListener('click', onRename);
+    }
+  }
+);
+
+const onImgChange = (coordinates: {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}) => {
+  console.log(coordinates);
+};
 </script>

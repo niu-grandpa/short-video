@@ -3,9 +3,16 @@
     <ALayoutSider
       theme="light"
       :width="siderWidth"
-      style="height: calc(100vh - 61px); padding-top: 8px">
+      style="
+        height: calc(100vh - 61px);
+        padding-top: 8px;
+        border-inline-end: 1px solid #0505050f;
+      ">
       <ClientOnly>
-        <AMenu v-model:selectedKeys="currentKey" @click="onChangeView">
+        <AMenu
+          v-model:selectedKeys="currentKey"
+          @click="onChangeView"
+          style="border-inline-end: 0">
           <AMenuItem key="home">
             <div class="flex items-center text-[17px] font-semibold">
               <HomeOutlined class="mx-[4px]" style="font-size: 24px" />

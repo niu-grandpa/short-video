@@ -1,7 +1,6 @@
 <template>
   <NuxtPage />
   <AuthOverlay />
-  <EditProfileOverlay />
 </template>
 
 <script setup>

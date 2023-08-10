@@ -1,4 +1,4 @@
-export const useDebounce = (fn: (...args: unknown[]) => any, delay: number) => {
+export const useDebounce = (fn: (...args: any[]) => any, delay: number) => {
   const fnRef = computed(() => fn);
   const timer = ref<NodeJS.Timeout | null>(null);
 

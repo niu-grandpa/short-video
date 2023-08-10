@@ -10,7 +10,6 @@ export const useGeneralStore = defineStore('general', {
 
   state: () => ({
     isLoginOpen: false,
-    isEditOpen: false,
   }),
 
   actions: {
