@@ -42,11 +42,11 @@
             <img
               class="absolute z-20 pointer-events-none"
               src="~/assets/images/mobile-case.png" />
+
             <video
               loop
               muted
               autoplay
-              :src="videoURL"
               ref="videoRef"
               class="absolute rounded-xl object-cover z-10 p-[13px] w-full h-full" />
 
@@ -102,15 +102,14 @@
             <ASpace>
               <AButton
                 type="primary"
-                danger
                 size="large"
                 @click="onReset"
-                class="w-[100px]">
+                class="w-[120px]">
                 重置
               </AButton>
               <AButton
                 :loading="isUploading"
-                class="w-[100px]"
+                class="w-[120px]"
                 size="large"
                 @click="onPostVideo">
                 上传
@@ -133,8 +132,11 @@ import { UploadLayout } from '~/layouts';
 const { $userStore } = useNuxtApp();
 
 const router = useRouter();
+
 // 代表200MB，单位bt
 const maxSize = 209715200;
+// 30分钟，单位秒
+const maxDuration = 1;
 
 const caption = ref('');
 const isUploading = ref(false);
@@ -151,6 +153,20 @@ onMounted(() => {
   inputRef.value = document.querySelector('.ant-upload-btn');
 });
 
+watch(
+  () => videoURL.value,
+  newVal => {
+    videoRef.value!.src = newVal;
+    setTimeout(() => {
+      const { duration } = videoRef.value!;
+      if (~~duration > maxDuration) {
+        onReset();
+        message.error('视频时长不能超过30分钟');
+      }
+    }, 100);
+  }
+);
+
 const onBeforeUpload = (file: FileType) => {
   if (file.size > maxSize) {
     message.error('视频大小超出限制');
@@ -158,7 +174,6 @@ const onBeforeUpload = (file: FileType) => {
   }
   return new Promise((_, reject) => {
     videoURL.value = URL.createObjectURL(file);
-
     reject();
   });
 };
@@ -174,7 +189,7 @@ const handleFormData = () => {
 // 上传视频
 const onPostVideo = async () => {
   if (!fileBlob.value) {
-    message.error('请选择一个视频上传');
+    message.error('请上传视频');
     return;
   }
   if (!caption.value) {

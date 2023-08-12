@@ -9,10 +9,16 @@ export const useGeneralStore = defineStore('general', {
   persist: true,
 
   state: () => ({
+    backUrl: '/',
     isLoginOpen: false,
   }),
 
   actions: {
+    setBackUrl(url: string) {
+      if (url === this.$state.backUrl) return;
+      this.$state.backUrl = url;
+    },
+
     // 检查seesion过期
     async hasSessionExpired() {
       // 当进入页面时，调用的任何api都会被axios拦截器拦截
