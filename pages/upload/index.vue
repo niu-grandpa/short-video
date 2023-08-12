@@ -136,7 +136,7 @@ const router = useRouter();
 // 代表200MB，单位bt
 const maxSize = 209715200;
 // 30分钟，单位秒
-const maxDuration = 1;
+const maxDuration = 1800;
 
 const caption = ref('');
 const isUploading = ref(false);
@@ -157,13 +157,13 @@ watch(
   () => videoURL.value,
   newVal => {
     videoRef.value!.src = newVal;
-    setTimeout(() => {
-      const { duration } = videoRef.value!;
-      if (~~duration > maxDuration) {
+    videoRef.value!.onloadeddata = e => {
+      // @ts-ignore
+      if (~~e.target.duration > maxDuration) {
         onReset();
         message.error('视频时长不能超过30分钟');
       }
-    }, 100);
+    };
   }
 );
 
