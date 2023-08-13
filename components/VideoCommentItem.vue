@@ -35,7 +35,9 @@
     </template>
 
     <template #content>
-      <p>{{ props.content }}</p>
+      <ATypographyParagraph
+        :content="props.content"
+        :ellipsis="{ rows: 5, expandable: true, symbol: '展开' }" />
     </template>
 
     <template #datetime>
@@ -65,10 +67,12 @@ export type CommentItemType = {
   datetime: number;
 };
 
+export type CommentData = { parentId: string; id: string; author: string };
+
 dayjs.locale('zh-cn');
 dayjs.extend(relativeTime);
 
-const emit = defineEmits(['reply']);
+const emit = defineEmits<{ (e: 'reply', res: CommentData): void }>();
 const props = defineProps<CommentItemType>();
 
 const likes = ref<number>(props.likes);
@@ -109,6 +113,6 @@ const onReply = () =>
   emit('reply', {
     id: props._id,
     author: props.author,
-    parentId: props.parentId,
+    parentId: props.parentId || '',
   });
 </script>

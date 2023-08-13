@@ -4,6 +4,7 @@ import { useDebounce } from './useDebounce';
 
 type UseSrcollLoadingOptions<T> = Partial<{
   delay: number;
+  loop: boolean;
   maxHeight: string;
   immediately: boolean;
   request: {
