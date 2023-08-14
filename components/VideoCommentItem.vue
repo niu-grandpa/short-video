@@ -1,5 +1,5 @@
 <template>
-  <Comment>
+  <AComment>
     <template #actions>
       <span key="comment-basic-like" class="flex items-center" @click="onLike">
         <LikeFilled v-if="action === 'liked'" />
@@ -47,11 +47,10 @@
     </template>
 
     <slot />
-  </Comment>
+  </AComment>
 </template>
 
 <script lang="ts" setup>
-import { Comment } from 'ant-design-vue';
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';

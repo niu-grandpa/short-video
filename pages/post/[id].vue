@@ -46,7 +46,7 @@
         class="overflow-auto h-[calc(100vh-148px)] max-h-[calc(100vh-148px)] px-[26px] pb-[24px]">
         <ClientOnly>
           <VideoComments
-            :data-source="parentComments"
+            :data-source="comments"
             @reply="onGetReplyObj"
             @load-sub-reply="onLoadSubComments" />
         </ClientOnly>
@@ -61,10 +61,10 @@
       title="回复"
       destroyOnClose
       :mask="false"
-      v-model:open="open"
+      v-model:open="isLoadSubComments"
       :keyboard="false"
       :width="commentsRef?.['$el']['offsetWidth']">
-      //
+      // todo
     </ADrawer>
   </ClientOnly>
 </template>
@@ -82,11 +82,11 @@ const router = useRouter();
 const commentsRef = ref(null);
 const videoRef = ref<HTMLVideoElement | null>(null);
 
-const open = ref(false);
-const placeholder = ref('添加评论...');
+const placeholder = ref('');
+const isLoadSubComments = ref(false);
 
 const commentObj = ref<CommentData>();
-const parentComments = ref<CommentsType[]>([
+const comments = ref<CommentsType[]>([
   {
     _id: 'string',
     author: 'Jshon',
@@ -200,16 +200,15 @@ const parentComments = ref<CommentsType[]>([
     ],
   },
 ]);
-const currenParentComment = ref<CommentsType>();
-const subComments = ref<CommentsType['reply']>([]);
+const currenComment = ref<CommentsType[]>([]);
 
 const commentLen = computed(() => {
-  const list = parentComments.value;
+  const list = comments.value;
   return list.length + list.reduce((p, c) => p + (c.reply?.length ?? 0), 0);
 });
 
 watch(
-  () => open.value,
+  () => isLoadSubComments.value,
   newVal => {
     if (!newVal) {
       placeholder.value = '';
@@ -226,17 +225,14 @@ const onGetReplyObj = (res: CommentData) => {
 
 // 加载子评论列表
 const onLoadSubComments = (id: string) => {
-  open.value = true;
-  currenParentComment.value = parentComments.value.filter(
-    ({ _id }) => id === _id
-  )[0];
-  subComments.value = currenParentComment.value.reply;
+  isLoadSubComments.value = true;
+  currenComment.value = comments.value.filter(({ _id }) => id === _id);
 };
 
 const onPostComment = () => {
   $userStore.setReplyData({
     postId: route.params.id as string,
-    isReplySub: open.value,
+    isReplySub: isLoadSubComments.value,
     commentObj: commentObj.value,
   });
   commentObj.value = undefined;

@@ -1,24 +1,38 @@
 <template>
   <template
     v-if="$props.dataSource.length"
-    v-for="item in $props.dataSource"
-    :key="item._id">
+    v-for="parent in $props.dataSource"
+    :key="parent._id">
     <VideoCommentItem
-      :_id="item._id"
-      :author="item.author"
-      :avatar="item.avatar"
-      :content="item.content"
-      :likes="item.likes"
-      :dislikes="item.dislikes"
-      :parentId="item.parentId"
-      :datetime="item.datetime"
+      :_id="parent._id"
+      :author="parent.author"
+      :avatar="parent.avatar"
+      :content="parent.content"
+      :likes="parent.likes"
+      :dislikes="parent.dislikes"
+      :parentId="parent.parentId"
+      :datetime="parent.datetime"
       @reply="res => $emit('reply', res)">
-      <a
-        v-if="item.reply?.length"
-        class="text-[#1677ff]"
-        @click="() => $emit('loadSubReply', item._id)">
-        {{ item.reply?.length }} 条回复
-      </a>
+      <template v-if="!$props.loadSub">
+        <a
+          v-if="parent.reply?.length"
+          class="text-[#1677ff]"
+          @click="() => $emit('loadSubReply', parent._id)">
+          {{ parent.reply?.length }} 条回复
+        </a>
+      </template>
+      <template v-else v-for="sub in parent.reply" :key="sub._id">
+        <VideoCommentItem
+          :_id="sub._id"
+          :author="sub.author"
+          :avatar="sub.avatar"
+          :content="sub.content"
+          :likes="sub.likes"
+          :dislikes="sub.dislikes"
+          :parentId="sub.parentId"
+          :datetime="sub.datetime"
+          @reply="res => $emit('reply', res)" />
+      </template>
     </VideoCommentItem>
   </template>
 
@@ -37,5 +51,5 @@ defineEmits<{
   (e: 'loadSubReply', id: string): void;
 }>();
 
-defineProps<{ dataSource: CommentsType[] }>();
+defineProps<{ dataSource: CommentsType[]; loadSub?: boolean }>();
 </script>
