@@ -4,24 +4,19 @@ import mongoose from 'mongoose';
 
 const User = new mongoose.Schema({
   uid: String,
-  role: String,
-  token: String,
-  password: String,
-  logged: Boolean,
-  posts: Array,
-  favorites: Array,
-  following: Array,
-  followers: Array,
-  phoneNumber: Number,
-});
-
-const Profile = new mongoose.Schema({
-  uid: String,
   nickname: String,
   avatar: String,
   gender: Number,
   user_sign: String,
   privacy_settings: Object,
+  role: Number,
+  token: String,
+  logged: Boolean,
+  posts: Array,
+  favorites: Array,
+  following: Array,
+  followers: Array,
+  phoneNumber: String,
 });
 
 const Video = new mongoose.Schema({
@@ -52,21 +47,20 @@ const Comment = new mongoose.Schema({
   // ]
 });
 
-const Like = new mongoose.Schema({
+const VideoLike = new mongoose.Schema({
   belong: Number,
   users: Array,
 });
 
-const Favorite = new mongoose.Schema({
+const VideoFavorite = new mongoose.Schema({
   belong: Number,
   users: Array,
 });
 
 export default {
   User,
-  Profile,
   Video,
   Comment,
-  Like,
-  Favorite,
+  VideoLike,
+  VideoFavorite,
 } as const;
