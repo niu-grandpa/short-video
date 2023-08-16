@@ -8,47 +8,59 @@ import { IReq, IReqQuery, IRes } from '../types/types';
  */
 async function getAll(_: IReq, res: IRes) {
   const users = await UserService.getAll();
-  return res.status(HttpStatusCodes.OK).json({ users });
+  return res.status(HttpStatusCodes.OK).json({ data: users });
 }
 
 /**
  * Get one user.
  */
-async function getOne(req: IReqQuery<{ id: string }>, res: IRes) {
-  const { id } = req.query;
-  const user = await UserService.getById(id);
-  return res.status(HttpStatusCodes.OK).json({ user });
+async function getOne(req: IReq, res: IRes) {
+  const user = await UserService.getOne(req.headers.authorization!);
+  return res.status(HttpStatusCodes.OK).json({ data: user });
 }
 
 /**
  * Update one user.
  */
-async function update(
-  req: IReq<{ data: { uid: string } & UpdateUser }>,
-  res: IRes
-) {
-  const { uid, ...obj } = req.body.data;
-  await UserService.updateOne(uid, obj);
+async function update(req: IReq<{ data: UpdateUser }>, res: IRes) {
+  await UserService.updateOne(req.headers.authorization!, req.body.data);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * User login.
  */
-async function login(req: IReq<{ data: string | AddUser }>, res: IRes) {
+async function login(
+  req: IReq<{ data: { token: string } & AddUser }>,
+  res: IRes
+) {
   const { data } = req.body;
+  let _data;
+  if (data?.token) {
+    _data = data.token;
+  } else {
+    _data = data;
+  }
   // @ts-ignore
-  const uid = await UserService.login(data);
-  return res.status(HttpStatusCodes.OK).json(uid);
+  const uid = await UserService.login(_data);
+  return res.status(HttpStatusCodes.OK).json({ data: uid });
 }
 
 /**
  * User logout.
  */
-async function logout(req: IReq<{ data: string }>, res: IRes) {
-  const { data } = req.body;
-  await UserService.logout(data);
+async function logout(req: IReq, res: IRes) {
+  await UserService.logout(req.headers.authorization!);
   return res.status(HttpStatusCodes.OK).end();
+}
+
+/**
+ * User profile.
+ */
+async function profile(req: IReqQuery<{ uid: string }>, res: IRes) {
+  const f = req.query?.uid ?? req.headers.authorization;
+  const data = await UserService.getProfile(f);
+  return res.status(HttpStatusCodes.OK).json({ data });
 }
 
 export default {
@@ -57,4 +69,5 @@ export default {
   update,
   login,
   logout,
+  profile,
 } as const;

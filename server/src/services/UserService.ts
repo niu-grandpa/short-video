@@ -12,13 +12,22 @@ async function getAll(): Promise<IUser[]> {
   return await db.UserModel.find();
 }
 
-async function getById(uid: string): Promise<IUser> {
-  const user = await db.UserModel.findOne({ uid });
+async function getOne(token: string): Promise<IUser> {
+  const user = await db.UserModel.findOne({ token });
   if (!user) {
     throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
   }
   // @ts-ignore
   return user;
+}
+
+async function getProfile(uid: string) {
+  const user = await db.UserModel.findOne({ uid });
+  if (!user) {
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+  }
+  const { token, logged, phoneNumber, ...rest } = user;
+  return rest;
 }
 
 async function addOne({ phoneNumber, code }: AddUser): Promise<string> {
@@ -30,17 +39,17 @@ async function addOne({ phoneNumber, code }: AddUser): Promise<string> {
   await new db.UserModel({
     ...newUser,
   }).save();
-  return newUser.uid;
+  return newUser.token;
 }
 
 async function updateOne(
-  uid: string,
+  token: string,
   { nickname, avatar, user_sign, role, gender }: UpdateUser
 ): Promise<void> {
   try {
-    const user = await getById(uid);
+    const user = await getOne(token);
     await db.UserModel.updateOne(
-      { uid },
+      { token },
       {
         $set: {
           role: role ?? user.role,
@@ -63,11 +72,11 @@ async function login(token: string): Promise<string>;
 async function login(obj: AddUser): Promise<string>;
 async function login(params: string | AddUser): Promise<string> {
   let filterKey = {},
-    uid = '';
+    token = '';
 
   if (typeof params === 'string') {
     if (User.isTokenExpired(params))
-      throw new RouteError(HttpStatusCodes.FORBIDDEN, USER_LOGIN_EXPIRED);
+      throw new RouteError(HttpStatusCodes.UNAUTHORIZED, USER_LOGIN_EXPIRED);
     filterKey = { token: params };
   } else {
     filterKey = { phoneNumber: params.phoneNumber };
@@ -77,18 +86,18 @@ async function login(params: string | AddUser): Promise<string> {
   }
 
   const user = await db.UserModel.findOne(filterKey);
-  uid = user?.uid ?? '';
+  token = user?.token ?? '';
 
   if (!user && typeof params !== 'string') {
     const { phoneNumber, code } = params;
-    uid = await addOne({ phoneNumber, code });
+    token = await addOne({ phoneNumber, code });
   } else if (user?.logged) {
     throw new RouteError(HttpStatusCodes.TOO_MANY_REQUESTS, USER_LOGGED_IN);
   }
 
   await db.UserModel.updateOne(filterKey, { $set: { logged: true } });
 
-  return uid;
+  return token;
 }
 
 async function logout(token: string): Promise<void> {
@@ -99,7 +108,8 @@ export default {
   login,
   logout,
   getAll,
-  getById,
+  getOne,
   addOne,
   updateOne,
+  getProfile,
 };

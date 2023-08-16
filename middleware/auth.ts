@@ -4,7 +4,7 @@ import { useUserStore } from '~/stores/user';
 export default defineNuxtRouteMiddleware((to, from) => {
   const userStore = useUserStore();
   // @ts-ignore
-  if (to !== '/' && !userStore.uid) {
+  if (to !== '/' && !userStore.token) {
     return navigateTo('/');
   }
 });

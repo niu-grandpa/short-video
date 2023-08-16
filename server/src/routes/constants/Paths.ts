@@ -9,10 +9,14 @@ const Paths = {
   Users: {
     Base: '/users',
     Get: '/all',
-    One: '/one/:id',
+    One: '/one',
     Update: '/update',
     Login: '/login',
     Logout: '/logout',
+    Profile: '/profile',
+  },
+  Videos: {
+    Base: '/videos',
   },
 };
 

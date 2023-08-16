@@ -9,5 +9,6 @@ userRouter.get(Paths.Users.One, Controllers.getOne);
 userRouter.post(Paths.Users.Update, Controllers.update);
 userRouter.post(Paths.Users.Login, Controllers.login);
 userRouter.post(Paths.Users.Logout, Controllers.logout);
+userRouter.post(Paths.Users.Profile, Controllers.profile);
 
 export default userRouter;
