@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useGeneralStore } from '~/stores/general';
 import { useProfileStore } from '~/stores/profile';
 import { useUserStore } from '~/stores/user';
 
@@ -14,10 +15,11 @@ const baseURL =
 
 const basePath = '/api';
 
-const userStore = useUserStore();
-const profileStore = useProfileStore();
-
 export function useRequest<T>(config: UseRequest): Promise<T> {
+  const userStore = useUserStore();
+  const profileStore = useProfileStore();
+  const generalStore = useGeneralStore();
+
   const instance = axios.create({
     baseURL,
     withCredentials: true,
@@ -27,8 +29,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
   // 添加请求拦截器
   instance.interceptors.request.use(
     config => {
-      const { token } = useUserStore();
-      config.headers.Authorization = token;
+      config.headers.Authorization = localStorage.getItem('user_token');
       return config;
     },
     error => {
@@ -38,6 +39,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
         case 503: // 服务器问题
           userStore.restData();
           profileStore.restData();
+          generalStore.restData();
           window.location.href = '/';
           break;
         case 500:

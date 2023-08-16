@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import { useASDCallback } from '@/hooks';
+import { message } from 'ant-design-vue';
 
 const { $generalStore, $userStore, $profileStore } = useNuxtApp();
 
@@ -77,8 +78,14 @@ const onToUpload = useASDCallback(() => {
 });
 
 const onLogout = () => {
-  router.replace('/');
-  $userStore.restData();
-  $profileStore.restData();
+  $userStore
+    .logout()
+    .then(() => {
+      router.replace('/');
+      $userStore.restData();
+      $profileStore.restData();
+      $generalStore.restData();
+    })
+    .catch(() => message.error('退出登录失败'));
 };
 </script>

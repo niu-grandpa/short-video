@@ -77,7 +77,9 @@
 </template>
 
 <script setup lang="ts">
+import { message } from 'ant-design-vue';
 import { FormInstance, Rule } from 'ant-design-vue/es/form';
+import { AddUser } from '~/server/src/models/User';
 
 interface FormState {
   phoneNumber: string;
@@ -85,7 +87,7 @@ interface FormState {
   remember: boolean;
 }
 
-const { $generalStore } = useNuxtApp();
+const { $generalStore, $userStore } = useNuxtApp();
 
 const formRef = ref<FormInstance>();
 const confirmLoading = ref(false);
@@ -122,8 +124,24 @@ const rules: Record<string, Rule[]> = {
   code: [{ required: true, validator: validatePass2 }],
 };
 
-const onFinish = async (values: any) => {
+const onFinish = async ({
+  phoneNumber,
+  code,
+  remember,
+}: AddUser & { remember: boolean }) => {
   confirmLoading.value = true;
-  console.log('Success:', values);
+  try {
+    const token = await $userStore.login({ phoneNumber, code });
+    if (remember) {
+      $userStore.setToken(token);
+      $generalStore.isAutoLogin = true;
+    }
+    message.success('欢迎回来~');
+    $generalStore.isLoginOpen = false;
+  } catch (error) {
+    message.error('登录失败');
+  } finally {
+    confirmLoading.value = false;
+  }
 };
 </script>

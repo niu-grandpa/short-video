@@ -3,12 +3,18 @@ import { AddUser, IUser, UpdateUser } from '@/server/src/models/User';
 
 async function login(data: string): Promise<string>;
 async function login(data: AddUser): Promise<string>;
-async function login(_data: string | AddUser) {
+async function login(_data: string | AddUser): Promise<string> {
   const data = typeof _data === 'string' ? { token: _data } : _data;
   return await useRequest<string>({
     methods: 'POST',
     url: '/users/login',
     data,
+  });
+}
+
+async function logout(): Promise<void> {
+  return await useRequest({
+    url: '/users/logout',
   });
 }
 
@@ -39,10 +45,18 @@ async function profile(uid?: string): Promise<IUser> {
   });
 }
 
+async function isExpired(): Promise<boolean> {
+  return await useRequest<boolean>({
+    url: '/users/profile',
+  });
+}
+
 export default {
   login,
+  logout,
   getOne,
   getAll,
   update,
   profile,
+  isExpired,
 } as const;

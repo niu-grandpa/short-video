@@ -1,6 +1,5 @@
-import { AxiosStatic } from 'axios';
-import axios from '~/plugins/axios';
 import { useDebounce } from './useDebounce';
+import { useRequest } from './useRequest';
 
 type UseSrcollLoadingOptions<T> = Partial<{
   delay: number;
@@ -16,9 +15,6 @@ type UseSrcollLoadingOptions<T> = Partial<{
     error?: () => void;
   };
 }>;
-
-// @ts-ignore
-const $axios = axios().provide.axios as AxiosStatic;
 
 const defaultOptions = {
   delay: 200,
@@ -50,10 +46,11 @@ export const useSrcollLoading = <T = unknown>(
   el.style.height = opts.maxHeight;
   el.style.overflowY = 'auto';
 
-  const requsetData: () => Promise<T[]> = async () => {
+  const requsetData = async () => {
     try {
-      const { data } = await $axios.get(url!, {
-        params: {
+      const data = await useRequest<T[]>({
+        url: url!,
+        data: {
           page: page!++,
           size,
           sort,
@@ -86,7 +83,7 @@ export const useSrcollLoading = <T = unknown>(
       }
     } else if (url) {
       hasMore.value = true;
-      res = await requsetData();
+      res = (await requsetData()) as T[];
       if (!res.length) {
         hasMore.value = false;
         printf('info', 'all requests completed!');

@@ -1,10 +1,8 @@
-import { AddUser } from '@/server/src/models/User';
 import { defineStore } from 'pinia';
-import UserApi from 'services/UserApi';
 import { type ReplyData } from '~/components/VideoCommentsPost.vue';
+import { AddUser } from '~/server/src/models/User';
+import UserApi from '~/services/UserApi';
 import { useGeneralStore } from './general';
-
-const generalStore = useGeneralStore();
 
 // 用户行为数据流
 export const useUserStore = defineStore('user', {
@@ -16,7 +14,6 @@ export const useUserStore = defineStore('user', {
     role: 0,
     phoneNumber: '',
     posts: [],
-    replyData: { postId: '', isReplySub: false, commentObj: undefined },
   }),
 
   actions: {
@@ -25,11 +22,6 @@ export const useUserStore = defineStore('user', {
       this.$state.token = '';
       this.$state.phoneNumber = '';
       this.$state.posts.length = 0;
-      this.$state.replyData = {
-        postId: '',
-        isReplySub: false,
-        commentObj: undefined,
-      };
     },
 
     setReplyData(val: ReplyData) {
@@ -42,33 +34,34 @@ export const useUserStore = defineStore('user', {
       this.$state.token = token ?? '';
     },
 
+    // 当勾选自动登录时，调用此方法
     setToken(val: string) {
       this.$state.token = val;
       localStorage.setItem('user_token', val);
     },
 
-    async login(data: AddUser) {
-      this.$state.token = await UserApi.login(data);
-    },
-
-    async autoLogin() {
-      if (this.$state.token) {
-        this.$state.token = await UserApi.login(this.$state.token);
-      } else {
-        generalStore.isLoginOpen = true;
-      }
+    async login(data: string | AddUser) {
+      // @ts-ignore
+      const token = await UserApi.login(data);
+      await useGeneralStore().getUserData();
+      return token;
     },
 
     async getOne() {
       const { uid, posts, role, phoneNumber } = await UserApi.getOne();
       this.$state.uid = uid;
       this.$state.role = role;
+      // @ts-ignore
       this.$state.posts = posts;
       this.$state.phoneNumber = phoneNumber;
     },
 
-    async getAll() {
+    async getAllUsers() {
       return await UserApi.getAll();
+    },
+
+    async logout() {
+      return await UserApi.logout();
     },
   },
 });

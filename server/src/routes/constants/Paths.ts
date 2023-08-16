@@ -14,6 +14,7 @@ const Paths = {
     Login: '/login',
     Logout: '/logout',
     Profile: '/profile',
+    HasSessionExpired: '/has-session-expired',
   },
   Videos: {
     Base: '/videos',

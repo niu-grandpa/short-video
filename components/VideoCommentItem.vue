@@ -78,20 +78,18 @@ const likes = ref<number>(props.likes);
 const dislikes = ref<number>(props.dislikes);
 const action = ref<'liked' | 'disliked' | ''>('');
 
-const repetitiveAction = computed(
-  () => (type: string, v1: Ref<number>, v2: number) => {
-    if (action.value === type) {
-      if (v1.value > v2) {
-        v1.value--;
-        action.value = '';
-        return true;
-      }
+const repetitiveAction = (type: string, v1: Ref<number>, v2: number) => {
+  if (action.value === type) {
+    if (v1.value > v2) {
+      v1.value--;
+      action.value = '';
+      return true;
     }
   }
-);
+};
 
 const onLike = async () => {
-  if (repetitiveAction.value('liked', likes, props.likes)) {
+  if (repetitiveAction('liked', likes, props.likes)) {
     return;
   }
   likes.value++;
@@ -100,7 +98,7 @@ const onLike = async () => {
 };
 
 const onDislike = async () => {
-  if (repetitiveAction.value('disliked', dislikes, props.dislikes)) {
+  if (repetitiveAction('disliked', dislikes, props.dislikes)) {
     return;
   }
   dislikes.value++;

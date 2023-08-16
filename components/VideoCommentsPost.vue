@@ -30,7 +30,7 @@ export type ReplyData = {
 
 defineProps<{ placeholder: string }>();
 
-const { $userStore } = useNuxtApp();
+const { $generalStore } = useNuxtApp();
 
 const emit = defineEmits<{
   (e: 'post'): void;
@@ -46,7 +46,7 @@ const onPostComment = async () => {
 
   emit('post');
 
-  const { postId, isReplySub, commentObj } = $userStore.replyData;
+  const { postId, isReplySub, commentObj } = $generalStore.replyData;
   // 增加新评论
   if (!isReplySub && !commentObj) {
   } else {

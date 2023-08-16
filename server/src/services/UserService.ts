@@ -68,6 +68,14 @@ async function updateOne(
   }
 }
 
+function hasSessionExpired(token: string): boolean {
+  const res = User.isTokenExpired(token);
+  if (res) {
+    throw new RouteError(HttpStatusCodes.UNAUTHORIZED, USER_LOGIN_EXPIRED);
+  }
+  return false;
+}
+
 async function login(token: string): Promise<string>;
 async function login(obj: AddUser): Promise<string>;
 async function login(params: string | AddUser): Promise<string> {
@@ -75,9 +83,7 @@ async function login(params: string | AddUser): Promise<string> {
     token = '';
 
   if (typeof params === 'string') {
-    if (User.isTokenExpired(params))
-      throw new RouteError(HttpStatusCodes.UNAUTHORIZED, USER_LOGIN_EXPIRED);
-    filterKey = { token: params };
+    if (!hasSessionExpired(params)) filterKey = { token: params };
   } else {
     filterKey = { phoneNumber: params.phoneNumber };
     await db.UserModel.updateOne(filterKey, {
@@ -112,4 +118,5 @@ export default {
   addOne,
   updateOne,
   getProfile,
+  hasSessionExpired,
 };

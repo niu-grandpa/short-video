@@ -1,10 +1,9 @@
 import { useGeneralStore } from '~/stores/general';
 import { useUserStore } from '~/stores/user';
 
-const route = useRoute();
-const router = useRouter();
-
 export const useASDCallback = (fn: () => any, to = '') => {
+  const router = useRouter();
+
   if (!useUserStore().uid) {
     return () => {
       if (to !== '') {
