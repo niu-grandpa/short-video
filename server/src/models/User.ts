@@ -39,14 +39,6 @@ export interface AddUser {
   code: string;
 }
 
-export interface UpdateUser {
-  nickname?: string;
-  user_sign?: string;
-  avatar?: string;
-  role?: UserRoles;
-  gender?: UserGender;
-}
-
 /**
  * Create new User.
  */

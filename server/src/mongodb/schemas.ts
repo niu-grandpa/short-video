@@ -24,43 +24,20 @@ const Video = new mongoose.Schema({
   url: String,
   title: String,
   seen: Number,
-  user_id: String,
-  user_icon: String,
-  likes: Number,
-  followers: Number,
+  uid: String,
+  avatar: String,
+  likes: Array,
+  favorites: Array,
   is_public: Boolean,
 });
 
 const Comment = new mongoose.Schema({
   belong: Number,
   comments: Array,
-  // comments: [
-  //   {
-  //     content: String,
-  //     likes: Number,
-  //     dislikes: Number,
-  //     user_id: String,
-  //     user_icon: String,
-  //     replys: Array,
-  //   },
-  //   ...
-  // ]
-});
-
-const VideoLike = new mongoose.Schema({
-  belong: Number,
-  users: Array,
-});
-
-const VideoFavorite = new mongoose.Schema({
-  belong: Number,
-  users: Array,
 });
 
 export default {
   User,
   Video,
   Comment,
-  VideoLike,
-  VideoFavorite,
 } as const;

@@ -1,5 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import User, { AddUser, IUser, UpdateUser } from '@src/models/User';
+import User, { AddUser, IUser } from '@src/models/User';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
 
@@ -44,22 +44,19 @@ async function addOne({ phoneNumber, code }: AddUser): Promise<string> {
 
 async function updateOne(
   token: string,
-  { nickname, avatar, user_sign, role, gender }: UpdateUser
+  newData: Partial<IUser>
 ): Promise<void> {
   try {
-    const user = await getOne(token);
-    await db.UserModel.updateOne(
-      { token },
-      {
-        $set: {
-          role: role ?? user.role,
-          gender: gender ?? user.gender,
-          avatar: avatar ?? user.avatar,
-          nickname: nickname ?? user.nickname,
-          user_sign: user_sign ?? user.user_sign,
-        },
-      }
-    );
+    const oldData = await getOne(token);
+    const update = {
+      role: newData.role ?? oldData.role,
+      gender: newData.gender ?? oldData.gender,
+      avatar: newData.avatar ?? oldData.avatar,
+      nickname: newData.nickname ?? oldData.nickname,
+      user_sign: newData.user_sign ?? oldData.user_sign,
+      privacy_settings: newData.privacy_settings ?? oldData.privacy_settings,
+    };
+    await db.UserModel.updateOne({ token }, { $set: update });
   } catch (error) {
     throw new RouteError(
       HttpStatusCodes.INTERNAL_SERVER_ERROR,
