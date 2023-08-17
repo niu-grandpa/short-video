@@ -18,19 +18,11 @@ db.once('open', function () {
 // 用于操作数据库文档的模型
 
 const UserModel = db.model('users', Schemas.User);
-
 const VideoModel = db.model('video_posts', Schemas.Video);
-
-const VideoLikesModel = db.model('video_likes', Schemas.VideoLike);
-
-const VideoFavoritesModel = db.model('video_favorites', Schemas.VideoFavorite);
-
 const CommentModel = db.model('video_comments', Schemas.Comment);
 
 export default {
   UserModel,
   VideoModel,
-  VideoLikesModel,
-  VideoFavoritesModel,
   CommentModel,
 } as const;

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { type ReplyData } from '~/components/VideoCommentsPost.vue';
-import { AddUser } from '~/server/src/models/User';
+import { AddUser, UserRoles } from '~/server/src/models/User';
 import UserApi from '~/services/UserApi';
 import { useGeneralStore } from './general';
 
@@ -11,9 +11,14 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     uid: '',
     token: '',
-    role: 0,
-    phoneNumber: '',
+    role: UserRoles.Standard,
     posts: [],
+    phoneNumber: '',
+    permissions: {
+      no_access: false,
+      lock_posts: false,
+      lock_favorited: false,
+    },
   }),
 
   actions: {
@@ -22,6 +27,12 @@ export const useUserStore = defineStore('user', {
       this.$state.token = '';
       this.$state.phoneNumber = '';
       this.$state.posts.length = 0;
+      this.$state.permissions = {
+        no_access: false,
+        lock_posts: false,
+        lock_favorited: false,
+      };
+      this.$state.role = UserRoles.Standard;
     },
 
     setReplyData(val: ReplyData) {

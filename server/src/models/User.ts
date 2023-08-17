@@ -27,7 +27,7 @@ export interface IUser {
   avatar: string;
   gender: UserGender;
   user_sign: string;
-  privacy_settings: {
+  permissions: {
     no_access: boolean;
     lock_posts: boolean;
     lock_favorited: boolean;
@@ -59,7 +59,7 @@ function new_(phoneNumber: string, code: string): IUser {
     avatar: '',
     user_sign: '',
     nickname: `用户_${timestamp}`,
-    privacy_settings: {
+    permissions: {
       no_access: false,
       lock_posts: false,
       lock_favorited: false,

@@ -54,7 +54,7 @@ async function updateOne(
       avatar: newData.avatar ?? oldData.avatar,
       nickname: newData.nickname ?? oldData.nickname,
       user_sign: newData.user_sign ?? oldData.user_sign,
-      privacy_settings: newData.privacy_settings ?? oldData.privacy_settings,
+      privacy_settings: newData.permissions ?? oldData.permissions,
     };
     await db.UserModel.updateOne({ token }, { $set: update });
   } catch (error) {
