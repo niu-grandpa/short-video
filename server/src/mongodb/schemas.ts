@@ -27,7 +27,7 @@ const Video = new mongoose.Schema({
   vid: Number,
   url: String,
   title: String,
-  seen: Number,
+  watched: Number,
   uid: String,
   avatar: String,
   likes: Array,

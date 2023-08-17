@@ -6,10 +6,12 @@ const userRouter = Router();
 
 userRouter.get(Paths.Users.Get, Controllers.getAll);
 userRouter.get(Paths.Users.One, Controllers.getOne);
-userRouter.post(Paths.Users.Update, Controllers.update);
+userRouter.get(Paths.Users.HasSessionExpired, Controllers.sessionExpired);
+
 userRouter.post(Paths.Users.Login, Controllers.login);
 userRouter.post(Paths.Users.Logout, Controllers.logout);
-userRouter.post(Paths.Users.Profile, Controllers.profile);
-userRouter.post(Paths.Users.HasSessionExpired, Controllers.sessionExpired);
+
+userRouter.put(Paths.Users.Update, Controllers.update);
+userRouter.put(Paths.Users.Profile, Controllers.profile);
 
 export default userRouter;

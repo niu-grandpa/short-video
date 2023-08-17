@@ -1,5 +1,5 @@
 import { useRequest } from '@/hooks';
-import { AddUser, IUser, UpdateUser } from '@/server/src/models/User';
+import { AddUser, IUser } from '@/server/src/models/User';
 
 async function login(data: string): Promise<string>;
 async function login(data: AddUser): Promise<string>;
@@ -30,9 +30,9 @@ async function getAll(): Promise<IUser[]> {
   });
 }
 
-async function update(data: UpdateUser): Promise<void> {
+async function update(data: IUser): Promise<void> {
   return await useRequest({
-    methods: 'POST',
+    methods: 'PUT',
     url: '/users/update',
     data,
   });
@@ -40,6 +40,7 @@ async function update(data: UpdateUser): Promise<void> {
 
 async function profile(uid?: string): Promise<IUser> {
   return await useRequest<IUser>({
+    methods: 'PUT',
     url: '/users/profile',
     data: { uid },
   });
