@@ -8,7 +8,6 @@ const User = new mongoose.Schema({
   avatar: String,
   gender: Number,
   user_sign: String,
-  privacy_settings: Object,
   role: Number,
   token: String,
   logged: Boolean,
@@ -17,6 +16,11 @@ const User = new mongoose.Schema({
   following: Array,
   followers: Array,
   phoneNumber: String,
+  permissions: {
+    no_access: Boolean,
+    lock_posts: Boolean,
+    lock_favorited: Boolean,
+  },
 });
 
 const Video = new mongoose.Schema({
@@ -28,7 +32,11 @@ const Video = new mongoose.Schema({
   avatar: String,
   likes: Array,
   favorites: Array,
-  is_public: Boolean,
+  permissions: {
+    publicity: Boolean,
+    private: Boolean,
+    friends_only: Boolean,
+  },
 });
 
 const Comment = new mongoose.Schema({
