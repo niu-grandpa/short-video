@@ -1,5 +1,5 @@
 export interface IComments {
-  belong: number;
+  belong: string;
   comments: ICommentItem[];
 }
 
@@ -8,39 +8,45 @@ export interface ICommentItem {
   uid: string;
   avatar: string;
   author: string;
-  likes: number;
-  dislikes: number;
+  likes: number[];
   content: string;
   create_time: number;
   update_time: number;
-  replies: (ICommentItem[] & { father_id: string }) | [];
+  replies?: (ICommentItem & { father_id: string })[] | [];
 }
 
-export interface ICreateComment {
+export interface AddComment {
   uid: string;
   avatar: string;
   author: string;
   content: string;
-  belong_vid: string;
-  its_father?: string;
+  belong: string;
+  father_id?: string;
+}
+
+export interface RemoveComment {
+  belong: string;
+  father_id: string;
+  child_id?: string;
+}
+
+export interface LikeComment extends RemoveComment {
+  uid: string;
+  flag: boolean;
 }
 
 /**
  * 创建新评论
  */
-function new_(data: ICreateComment): ICommentItem {
-  const { uid, avatar, author, content } = data;
-  return {
-    uid,
-    avatar,
-    author,
-    content,
-    likes: 0,
-    dislikes: 0,
-    create_time: Date.now(),
+function new_(data: AddComment): ICommentItem {
+  const obj: ICommentItem = {
+    ...data,
+    likes: [],
     update_time: 0,
-    replies: [],
+    create_time: Date.now(),
   };
+  !data.father_id ?? (obj.replies = []);
+  return obj;
 }
 
 export default {

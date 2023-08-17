@@ -1,5 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { AddUser, UpdateUser } from '@src/models/User';
+import { AddUser, IUser } from '@src/models/User';
 import UserService from '@src/services/UserService';
 import { IReq, IReqQuery, IRes } from '../types/types';
 
@@ -22,7 +22,7 @@ async function getOne(req: IReq, res: IRes) {
 /**
  * Update one user.
  */
-async function update(req: IReq<{ data: UpdateUser }>, res: IRes) {
+async function update(req: IReq<{ data: IUser }>, res: IRes) {
   await UserService.updateOne(req.headers.authorization!, req.body.data);
   return res.status(HttpStatusCodes.OK).end();
 }
