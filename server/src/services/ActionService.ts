@@ -1,4 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import { LikeComment } from '@src/models/Comments';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
 
@@ -87,9 +88,35 @@ async function addVideoWatched(vid: string) {
   }
 }
 
+// 评论点赞&点踩
+async function setLikeComment(data: LikeComment) {
+  const key = data.flag ? '$addToSet' : '$pull';
+  // 子评论
+  if (data?.child_id) {
+    await db.CommentModel.updateOne(
+      {
+        belong: data.belong,
+        'comments._id': data.father_id,
+        'comments.replies._id': data.child_id,
+      },
+      { [key]: { 'comments.$.replies.${elem}.likes': data.uid } }
+    );
+  } else {
+    // 父评论
+    await db.CommentModel.updateOne(
+      {
+        belong: data.belong,
+        'comments._id': data.father_id,
+      },
+      { [key]: { 'comments.$.likes': data.uid } }
+    );
+  }
+}
+
 export default {
   setFollowing,
   setFavorites,
   setLikeVideo,
   addVideoWatched,
+  setLikeComment,
 } as const;
