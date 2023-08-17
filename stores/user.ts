@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { type ReplyData } from '~/components/VideoCommentsPost.vue';
+import { IFavorites, IFollowing } from '~/server/src/models/Action';
 import { AddUser, UserRoles } from '~/server/src/models/User';
+import ActionApi from '~/services/ActionApi';
 import UserApi from '~/services/UserApi';
 import { useGeneralStore } from './general';
 
@@ -33,11 +34,6 @@ export const useUserStore = defineStore('user', {
         lock_favorited: false,
       };
       this.$state.role = UserRoles.Standard;
-    },
-
-    setReplyData(val: ReplyData) {
-      // @ts-ignore
-      this.$state.replyData = val;
     },
 
     getToken() {
@@ -73,6 +69,22 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       return await UserApi.logout();
+    },
+
+    async following(data: IFollowing) {
+      await ActionApi.following(data);
+    },
+
+    async favorites(data: IFavorites) {
+      await ActionApi.favorites(data);
+    },
+
+    async likeVideo(data: IFavorites) {
+      await ActionApi.likeVideo(data);
+    },
+
+    async watched(vid: string) {
+      await ActionApi.videoWatched(vid);
     },
   },
 });

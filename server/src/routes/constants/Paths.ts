@@ -19,6 +19,14 @@ const Paths = {
   Videos: {
     Base: '/videos',
   },
+  Actions: {
+    Base: '/actions',
+    Followers: '/set-followers',
+    Following: '/set-following',
+    Favorites: '/set-favorites',
+    LikeVideo: '/like-video',
+    VideoWatched: '/video-watched',
+  },
 };
 
 // **** Export **** //
