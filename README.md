@@ -38,4 +38,10 @@ pinia：vuex替代品-轻量级-使用方便
 
   - 使用axios的拦截器在发送请求前，将token添加到请求头中。(headers.Authorization)
 
+- 哪种请求方式该将数据放在请求体中，后端是使用request.query还是body接收
+
+  - 当Get和Delete请求通常是使用URL传参，不放在请求体中，后端通过req.query专门接收来自这两种请求方式的参数
+
+  - Post和Put请求将数据放在请求体中，后端使用中间件body-parser解析请求体数据，通过req.body接收，
+
 ## 成果和收获
