@@ -14,7 +14,7 @@ async function getAll(_: IReq, res: IRes) {
 /**
  * Get one user.
  */
-async function getOne(req: IReq, res: IRes) {
+async function getOne(req: IReqQuery<{}>, res: IRes) {
   const user = await UserService.getOne(req.headers.authorization!);
   return res.status(HttpStatusCodes.OK).json({ data: user });
 }
@@ -63,7 +63,7 @@ async function profile(req: IReqQuery<{ uid: string }>, res: IRes) {
   return res.status(HttpStatusCodes.OK).json({ data });
 }
 
-function sessionExpired(req: IReq, res: IRes) {
+function sessionExpired(req: IReqQuery<{}>, res: IRes) {
   const flag = UserService.hasSessionExpired(req.headers.authorization!);
   return res.status(HttpStatusCodes[flag ? 'UNAUTHORIZED' : 'OK']).end();
 }
