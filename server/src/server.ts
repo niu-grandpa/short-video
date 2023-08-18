@@ -2,8 +2,11 @@
  * Setup express server.
  */
 
+import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+
 import express, { NextFunction, Request, Response } from 'express';
+
 import helmet from 'helmet';
 import logger from 'jet-logger';
 import morgan from 'morgan';
@@ -16,6 +19,7 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
 import { NodeEnvs } from '@src/constants/misc';
 import { RouteError } from '@src/other/classes';
+
 import apiRouter from './routes/api';
 import Paths from './routes/constants/Paths';
 
@@ -29,6 +33,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
+app.use(bodyParser.json());
 
 // Show routes called in console during development
 if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
