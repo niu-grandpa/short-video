@@ -1,5 +1,6 @@
 import Comments, {
   AddComment,
+  ICommentItem,
   IComments,
   RemoveComment,
 } from '@src/models/Comments';
@@ -9,7 +10,7 @@ async function getOne(belong: string): Promise<IComments | null> {
   return await db.CommentModel.findOne({ belong });
 }
 
-async function addOne(data: AddComment): Promise<void> {
+async function addOne(data: AddComment): Promise<ICommentItem> {
   const item = Comments.new(data);
   const res = await getOne(data.belong);
 
@@ -32,6 +33,8 @@ async function addOne(data: AddComment): Promise<void> {
   } else {
     await new db.CommentModel(item).save();
   }
+
+  return item;
 }
 
 async function removeOne(data: RemoveComment): Promise<void> {

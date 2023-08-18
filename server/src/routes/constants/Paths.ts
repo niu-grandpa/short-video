@@ -27,6 +27,12 @@ const Paths = {
     LikeVideo: '/like-video',
     VideoWatched: '/video-watched',
   },
+  Comments: {
+    Base: '/comments',
+    Get: '/get',
+    Add: '/add',
+    Remove: '/remove',
+  },
 };
 
 // **** Export **** //
