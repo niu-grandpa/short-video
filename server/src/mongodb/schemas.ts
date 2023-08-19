@@ -30,6 +30,8 @@ const Video = new mongoose.Schema({
   watched: Number,
   uid: String,
   likes: Array,
+  avatar: String,
+  author: String,
   favorites: Array,
   created_at: Number,
   permissions: {

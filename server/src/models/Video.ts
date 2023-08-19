@@ -4,6 +4,8 @@ export interface IVideo {
   title: string;
   watched: number;
   uid: string;
+  avatar: string;
+  author: string;
   likes: number[];
   favorites: number[];
   created_at: number;
@@ -27,6 +29,8 @@ export interface IAddVideo {
 function new_(data: IAddVideo): IVideo {
   return {
     ...data,
+    author: '',
+    avatar: '',
     watched: 0,
     likes: [],
     favorites: [],
