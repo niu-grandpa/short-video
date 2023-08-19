@@ -8,6 +8,8 @@ export const enum CommentLevel {
 export interface IComment {
   _id?: string;
   uid: string;
+  avatar: string;
+  author: string;
   belong: string;
   likes: number[];
   content: string;
@@ -48,9 +50,11 @@ export interface GetComments extends GenericPagination {
 /**
  * 创建新评论
  */
-function new_(data: AddComment): IComment {
+function new_(data: AddComment & { author: string; avatar: string }): IComment {
   return {
     ...data,
+    author: '',
+    avatar: '',
     likes: [],
     updated_at: 0,
     created_at: Date.now(),

@@ -8,6 +8,7 @@ import Comments, {
 } from '@src/models/Comments';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
+import UserService from './UserService';
 
 async function getList(opts: GetComments): Promise<IComment[]> {
   try {
@@ -27,7 +28,12 @@ async function getList(opts: GetComments): Promise<IComment[]> {
 
 async function addOne(data: AddComment): Promise<IComment> {
   try {
-    const newData = Comments.new(data);
+    const { avatar, nickname } = await UserService.getProfile(data.uid);
+    const newData = Comments.new({
+      ...data,
+      avatar: avatar!,
+      author: nickname!,
+    });
     await new db.CommentModel(newData).save();
     return newData;
   } catch (error) {
