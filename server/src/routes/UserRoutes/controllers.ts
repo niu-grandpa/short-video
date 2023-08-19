@@ -20,6 +20,14 @@ async function getOne(req: IReqQuery<{}>, res: IRes) {
 }
 
 /**
+ * Get random user.
+ */
+async function getRandom(req: IReqQuery<{}>, res: IRes) {
+  const user = await UserService.getRandom();
+  return res.status(HttpStatusCodes.OK).json({ data: user });
+}
+
+/**
  * Update one user.
  */
 async function update(req: IReq<{ data: IUser }>, res: IRes) {
@@ -66,5 +74,6 @@ export default {
   login,
   logout,
   profile,
+  getRandom,
   sessionExpired,
 } as const;

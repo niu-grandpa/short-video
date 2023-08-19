@@ -1,8 +1,12 @@
 import { useRequest } from '@/hooks';
-import { AddUser, IUser } from '@/server/src/models/User';
+import { IUser, UserLogin } from '@/server/src/models/User';
 
-async function login(_data: string | AddUser): Promise<string> {
-  const data = typeof _data === 'string' ? { token: _data } : _data;
+export interface LoginResult {
+  uid: string;
+  token: string;
+}
+
+async function login(data: UserLogin): Promise<LoginResult | string> {
   return await useRequest<string>({
     methods: 'POST',
     url: '/users/login',
@@ -50,6 +54,12 @@ async function isExpired(): Promise<boolean> {
   });
 }
 
+async function recommend(): Promise<IUser[]> {
+  return await useRequest<IUser[]>({
+    url: '/users/recommend',
+  });
+}
+
 export default {
   login,
   logout,
@@ -57,5 +67,6 @@ export default {
   getAll,
   update,
   profile,
+  recommend,
   isExpired,
 } as const;
