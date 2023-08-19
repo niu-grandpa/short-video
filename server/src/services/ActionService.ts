@@ -1,4 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import { IFavorites, IFollowing } from '@src/models/Action';
 import { LikeComment } from '@src/models/Comments';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
@@ -7,11 +8,7 @@ export const VIDEO_NOT_FOUND_ERR = 'Video not found';
 export const VIDEO_OPERATION_ERR = 'An error occurred in the operation video';
 
 // 关注某人
-async function setFollowing(
-  uid: string,
-  someone: string,
-  flag: boolean
-): Promise<void> {
+async function setFollowing({ uid, someone, flag }: IFollowing): Promise<void> {
   try {
     await db.UserModel.updateOne(
       { uid },
@@ -46,11 +43,11 @@ async function setFollowers(
 }
 
 // 收藏视频
-async function setFavorites(uid: string, vid: string, flag: boolean) {
+async function setFavorites({ _id, flag, uid }: IFavorites) {
   try {
     const key = flag ? '$addToSet' : '$pull';
-    await db.UserModel.updateOne({ uid }, { [key]: { favorites: { vid } } });
-    await db.VideoModel.updateOne({ vid }, { [key]: { favorites: { uid } } });
+    await db.UserModel.updateOne({ uid }, { [key]: { favorites: { _id } } });
+    await db.VideoModel.updateOne({ _id }, { [key]: { favorites: { uid } } });
   } catch (error) {
     throw new RouteError(
       HttpStatusCodes.INTERNAL_SERVER_ERROR,
@@ -60,10 +57,10 @@ async function setFavorites(uid: string, vid: string, flag: boolean) {
 }
 
 // 点赞视频
-async function setLikeVideo(uid: string, vid: string, flag: boolean) {
+async function setLikeVideo({ _id, flag, uid }: IFavorites) {
   try {
     await db.VideoModel.updateOne(
-      { vid },
+      { _id },
       { [flag ? '$addToSet' : '$pull']: { likes: { uid } } }
     );
   } catch (error) {
@@ -75,11 +72,11 @@ async function setLikeVideo(uid: string, vid: string, flag: boolean) {
 }
 
 // 添加视频浏览量
-async function addVideoWatched(vid: string) {
+async function addVideoWatched(_id: string) {
   try {
     // @ts-ignore
-    const { watched } = await db.VideoModel.findOne({ vid })!;
-    await db.VideoModel.updateOne({ vid }, { $set: { watched: watched + 1 } });
+    const { watched } = await db.VideoModel.findOne({ _id });
+    await db.VideoModel.updateOne({ _id }, { $set: { watched: watched + 1 } });
   } catch (error) {
     throw new RouteError(
       HttpStatusCodes.INTERNAL_SERVER_ERROR,
@@ -89,26 +86,16 @@ async function addVideoWatched(vid: string) {
 }
 
 // 评论点赞&点踩
-async function setLikeComment(data: LikeComment) {
-  const key = data.flag ? '$addToSet' : '$pull';
-  // 子评论
-  if (data?.child_id) {
-    await db.CommentModel.updateOne(
-      {
-        belong: data.belong,
-        'comments._id': data.father_id,
-        'comments.replies._id': data.child_id,
-      },
-      { [key]: { 'comments.$.replies.${elem}.likes': data.uid } }
+async function setLikeComment({ uid, _id, flag }: LikeComment) {
+  try {
+    await db.CommentModel.findOneAndUpdate(
+      { _id },
+      { [flag ? '$addToSet' : '$pull']: { likes: { uid } } }
     );
-  } else {
-    // 父评论
-    await db.CommentModel.updateOne(
-      {
-        belong: data.belong,
-        'comments._id': data.father_id,
-      },
-      { [key]: { 'comments.$.likes': data.uid } }
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Comment like operation failed'
     );
   }
 }

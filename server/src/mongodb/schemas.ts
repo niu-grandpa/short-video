@@ -24,7 +24,7 @@ const User = new mongoose.Schema({
 });
 
 const Video = new mongoose.Schema({
-  vid: Number,
+  _id: String,
   url: String,
   title: String,
   watched: Number,
@@ -40,8 +40,15 @@ const Video = new mongoose.Schema({
 });
 
 const Comment = new mongoose.Schema({
-  belong: Number,
-  comments: Array,
+  _id: String,
+  uid: String,
+  level: Number,
+  belong: String,
+  likes: Number,
+  dislikes: Number,
+  content: String,
+  created_at: Number,
+  updated_at: Number,
 });
 
 export default {

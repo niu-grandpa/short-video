@@ -13,3 +13,10 @@ export interface IReqQuery<T extends Query, U = void> extends e.Request {
 }
 
 export interface IRes extends e.Response {}
+
+export interface GenericPagination {
+  page: number;
+  size: number;
+  /**正倒序 */
+  sort?: 1 | -1;
+}

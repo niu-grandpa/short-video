@@ -6,42 +6,32 @@ import { IReq, IRes } from '../types/types';
 /**
  * 关注某人
  */
-async function following(req: IReq<{ data: IFollowing }>, res: IRes) {
-  const {
-    data: { uid, someone, flag },
-  } = req.body;
-  await ActionService.setFollowing(uid, someone, flag);
+async function following(req: IReq<IFollowing>, res: IRes) {
+  await ActionService.setFollowing(req.body);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * 收藏视频
  */
-async function favorites(req: IReq<{ data: IFavorites }>, res: IRes) {
-  const {
-    data: { uid, vid, flag },
-  } = req.body;
-  await ActionService.setFavorites(uid, vid, flag);
+async function favorites(req: IReq<IFavorites>, res: IRes) {
+  await ActionService.setFavorites(req.body);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * 点赞视频
  */
-async function likeVideo(req: IReq<{ data: IFavorites }>, res: IRes) {
-  const {
-    data: { uid, vid, flag },
-  } = req.body;
-  await ActionService.setLikeVideo(uid, vid, flag);
+async function likeVideo(req: IReq<IFavorites>, res: IRes) {
+  await ActionService.setLikeVideo(req.body);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * 视频已看过
  */
-async function videoWatched(req: IReq<{ data: IFavorites }>, res: IRes) {
-  const { data } = req.body;
-  await ActionService.addVideoWatched(data.vid);
+async function videoWatched(req: IReq<{ _id: string }>, res: IRes) {
+  await ActionService.addVideoWatched(req.body._id);
   return res.status(HttpStatusCodes.OK).end();
 }
 

@@ -39,10 +39,14 @@ export interface AddUser {
   code: string;
 }
 
+export interface UserLogin extends AddUser {
+  token?: string;
+}
+
 /**
  * Create new User.
  */
-function new_(phoneNumber: string, code: string): IUser {
+function new_({ phoneNumber, code }: AddUser): IUser {
   const timestamp = Date.now();
   const uid = `2${phoneNumber.slice(6)}${timestamp % 100}${code[0]}`;
   return {
@@ -50,7 +54,7 @@ function new_(phoneNumber: string, code: string): IUser {
     role: UserRoles.Standard,
     gender: UserGender.Unknown,
     token: setUserToken({ uid, phoneNumber }),
-    logged: false,
+    logged: true,
     posts: [],
     favorites: [],
     following: [],

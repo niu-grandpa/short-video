@@ -8,5 +8,5 @@ export interface IFollowing extends IGeneral {
 }
 
 export interface IFavorites extends IGeneral {
-  vid: string;
+  _id: string;
 }
