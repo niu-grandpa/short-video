@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { IFavorites, IFollowing } from '~/server/src/models/Action';
-import { AddUser, UserRoles } from '~/server/src/models/User';
-import ActionApi from '~/services/ActionApi';
+import { IPUser, IPVideo } from '~/server/src/models/Permission';
+import { UserLogin, UserRoles } from '~/server/src/models/User';
+import PermissionApi from '~/services/PermissionApi';
 import UserApi from '~/services/UserApi';
 import { useGeneralStore } from './general';
 
@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', {
     uid: '',
     token: '',
     role: UserRoles.Standard,
-    posts: [],
+    posts: [-1],
     phoneNumber: '',
     permissions: {
       no_access: false,
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
       this.$state.uid = '';
       this.$state.token = '';
       this.$state.phoneNumber = '';
-      this.$state.posts.length = 0;
+      this.$state.posts = [];
       this.$state.permissions = {
         no_access: false,
         lock_posts: false,
@@ -47,44 +47,57 @@ export const useUserStore = defineStore('user', {
       localStorage.setItem('user_token', val);
     },
 
-    async login(data: string | AddUser) {
-      // @ts-ignore
-      const token = await UserApi.login(data);
+    /*
+     * 调用用户接口的方法
+     */
+
+    async hasSessionExpired() {
+      await UserApi.isExpired();
+    },
+
+    async login(data: UserLogin) {
+      const res = await UserApi.login(data);
+      if (typeof res === 'string') {
+        this.setToken(res);
+      } else {
+        this.setToken(res.token);
+        this.$state.uid = res.uid;
+      }
       await useGeneralStore().getUserData();
-      return token;
-    },
-
-    async getOne() {
-      const { uid, posts, role, phoneNumber } = await UserApi.getOne();
-      this.$state.uid = uid;
-      this.$state.role = role;
-      // @ts-ignore
-      this.$state.posts = posts;
-      this.$state.phoneNumber = phoneNumber;
-    },
-
-    async getAllUsers() {
-      return await UserApi.getAll();
     },
 
     async logout() {
       return await UserApi.logout();
     },
 
-    async following(data: IFollowing) {
-      await ActionApi.following(data);
+    async getOne() {
+      const { uid, posts, role, phoneNumber, permissions } =
+        await UserApi.getOne();
+      this.$state.uid = uid;
+      this.$state.role = role;
+      this.$state.posts = posts;
+      this.$state.permissions = permissions;
+      this.$state.phoneNumber = phoneNumber;
     },
 
-    async favorites(data: IFavorites) {
-      await ActionApi.favorites(data);
+    async getAll() {
+      return await UserApi.getAll();
     },
 
-    async likeVideo(data: IFavorites) {
-      await ActionApi.likeVideo(data);
+    async getRecommend() {
+      return await UserApi.recommend();
     },
 
-    async watched(vid: string) {
-      await ActionApi.videoWatched(vid);
+    /*
+     * 调用权限接口的方法
+     */
+
+    async setUserPermissions(data: IPUser) {
+      await PermissionApi.user(data);
+    },
+
+    async setVideoPermissions(data: IPVideo) {
+      await PermissionApi.video(data);
     },
   },
 });
