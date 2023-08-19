@@ -21,6 +21,10 @@ const UserModel = db.model('users', Schemas.User);
 const VideoModel = db.model('video_posts', Schemas.Video);
 const CommentModel = db.model('video_comments', Schemas.Comment);
 
+// 为集合中的字段创建随机索引，便于$sample 阶段高性能获取随机文档
+db.collection('users').createIndex({ random: 1 });
+db.collection('video_posts').createIndex({ random: 1 });
+
 export default {
   UserModel,
   VideoModel,
