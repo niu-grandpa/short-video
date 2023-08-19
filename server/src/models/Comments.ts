@@ -30,11 +30,6 @@ export interface UpdateComment {
   content: string;
 }
 
-export interface RemoveComment {
-  _id: string;
-  level: CommentLevel;
-}
-
 export interface LikeComment {
   uid: string;
   _id: string;
