@@ -1,60 +1,71 @@
+import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import Comments, {
   AddComment,
-  ICommentItem,
-  IComments,
+  GetComments,
+  IComment,
   RemoveComment,
+  UpdateComment,
 } from '@src/models/Comments';
 import db from '@src/mongodb';
+import { RouteError } from '@src/other/classes';
 
-async function getOne(belong: string): Promise<IComments | null> {
-  return await db.CommentModel.findOne({ belong });
-}
-
-async function addOne(data: AddComment): Promise<ICommentItem> {
-  const item = Comments.new(data);
-  const res = await getOne(data.belong);
-
-  // @ts-ignore
-  delete item.belong;
-
-  if (res !== null) {
-    // 是回复的子评论
-    if (data?.father_id) {
-      await db.CommentModel.updateOne(
-        { belong: data.belong, 'comments._id': data.father_id },
-        { $push: { 'comments.$.replies': item } }
-      );
-    } else {
-      await db.CommentModel.updateOne(
-        { belong: data.belong },
-        { $push: { comments: item } }
-      );
-    }
-  } else {
-    await new db.CommentModel(item).save();
-  }
-
-  return item;
-}
-
-async function removeOne(data: RemoveComment): Promise<void> {
-  // 删除回复的子评论
-  if (data?.child_id) {
-    await db.CommentModel.updateOne(
-      { belong: data.belong, 'comments._id': data.father_id },
-      { $pull: { 'comments.$.replies': { _id: data.child_id } } }
+async function getList(opts: GetComments): Promise<IComment[]> {
+  try {
+    const { belong, page, size, sort, level } = opts;
+    // @ts-ignore
+    return await db.CommentModel.find({ belong, level })
+      .sort({ create_at: sort ?? 1 })
+      .skip(page * size)
+      .limit(size);
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to get comments'
     );
-  } else {
-    // 删除父评论
-    await db.CommentModel.updateOne(
-      { belong: data.belong },
-      { $pull: { comments: { _id: data.father_id } } }
+  }
+}
+
+async function addOne(data: AddComment): Promise<IComment> {
+  try {
+    const newData = Comments.new(data);
+    await new db.CommentModel(newData).save();
+    return newData;
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to add comment'
+    );
+  }
+}
+
+async function removeOne(filter: RemoveComment): Promise<void> {
+  try {
+    await db.CommentModel.findOneAndRemove(filter);
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to delete comment'
+    );
+  }
+}
+
+async function updateOne({ _id, content }: UpdateComment): Promise<void> {
+  try {
+    await db.CommentModel.findOneAndUpdate(
+      { _id },
+      { $set: { content, updated_at: Date.now() } }
+    );
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to update comment'
     );
   }
 }
 
 export default {
-  getOne,
+  getList,
   addOne,
+  updateOne,
   removeOne,
 } as const;

@@ -1,37 +1,44 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { AddComment } from '@src/models/Comments';
+import {
+  AddComment,
+  GetComments,
+  RemoveComment,
+  UpdateComment,
+} from '@src/models/Comments';
 import CommentsService from '@src/services/CommentsService';
 import { IReq, IReqQuery, IRes } from '../types/types';
 
 /**
- * 获取一条评论列表
+ * 获取评论数据
  */
-async function get(req: IReqQuery<{ belong: string }>, res: IRes) {
-  const data = await CommentsService.getOne(req.query.belong);
-  return res.status(HttpStatusCodes.OK).json({ data });
-}
-
-/**
- * 添加一条评论
- */
-async function add(req: IReq<{ data: AddComment }>, res: IRes) {
-  const data = await CommentsService.addOne(req.body.data);
-  return res.status(HttpStatusCodes.OK).json({ data });
-}
-
-/**
- * 移除一条评论
- */
-async function remove(
-  req: IReqQuery<{ belong: string; father_id: string; child_id: string }>,
+async function get(
+  // @ts-ignore
+  req: IReqQuery<GetComments>,
   res: IRes
 ) {
-  const data = await CommentsService.removeOne(req.query);
+  const data = await CommentsService.getList(req.query);
   return res.status(HttpStatusCodes.OK).json({ data });
+}
+
+async function add(req: IReq<AddComment>, res: IRes) {
+  const data = await CommentsService.addOne(req.body);
+  return res.status(HttpStatusCodes.OK).json({ data });
+}
+
+async function update(req: IReq<UpdateComment>, res: IRes) {
+  await CommentsService.updateOne(req.body);
+  return res.status(HttpStatusCodes.OK).end();
+}
+
+// @ts-ignore
+async function remove(req: IReqQuery<RemoveComment>, res: IRes) {
+  await CommentsService.removeOne(req.query);
+  return res.status(HttpStatusCodes.OK).end();
 }
 
 export default {
   get,
   add,
+  update,
   remove,
 } as const;
