@@ -18,6 +18,11 @@ const Paths = {
   },
   Videos: {
     Base: '/videos',
+    Get: '/all',
+    One: '/one',
+    Upload: '/upload',
+    Random: '/random',
+    Remove: '/delete',
   },
   Actions: {
     Base: '/actions',
@@ -31,7 +36,8 @@ const Paths = {
     Base: '/comments',
     Get: '/get',
     Add: '/add',
-    Remove: '/remove',
+    Edit: '/edit',
+    Remove: '/delete',
   },
 };
 
