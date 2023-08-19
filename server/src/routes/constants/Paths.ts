@@ -6,6 +6,7 @@ import { Immutable } from '@src/other/types';
 
 const Paths = {
   Base: '/api',
+
   Users: {
     Base: '/users',
     Get: '/all',
@@ -14,16 +15,19 @@ const Paths = {
     Login: '/login',
     Logout: '/logout',
     Profile: '/profile',
+    Recommend: '/recommend',
     HasSessionExpired: '/has-session-expired',
   },
+
   Videos: {
     Base: '/videos',
-    Get: '/all',
+    Get: '/list',
     One: '/one',
     Upload: '/upload',
     Random: '/random',
     Remove: '/delete',
   },
+
   Actions: {
     Base: '/actions',
     Followers: '/set-followers',
@@ -32,12 +36,19 @@ const Paths = {
     LikeVideo: '/like-video',
     VideoWatched: '/video-watched',
   },
+
   Comments: {
     Base: '/comments',
-    Get: '/get',
-    Add: '/add',
+    Get: '/list',
+    Add: '/post',
     Edit: '/edit',
     Remove: '/delete',
+  },
+
+  Permissions: {
+    Base: '/permissions',
+    SetUser: '/set-user',
+    SetVideo: '/set-video',
   },
 };
 

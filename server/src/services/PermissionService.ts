@@ -1,19 +1,15 @@
-import { IPVidoe } from '@src/models/Permission';
-import { IUser } from '@src/models/User';
+import { IPUser, IPVideo } from '@src/models/Permission';
 import db from '@src/mongodb';
 
-async function updateUser(
-  token: string,
-  permissions: IUser['permissions']
-): Promise<void> {
+async function setUser({ token, permissions }: IPUser): Promise<void> {
   await db.UserModel.updateOne({ token }, { $set: { permissions } });
 }
 
-async function updateVideo({ _id, token, permissions }: IPVidoe) {
-  await db.VideoModel.updateOne({ _id, token }, { $set: { permissions } });
+async function setVideo({ _id, uid, permissions }: IPVideo) {
+  await db.VideoModel.updateOne({ _id, uid }, { $set: { permissions } });
 }
 
 export default {
-  updateUser,
-  updateVideo,
+  setUser,
+  setVideo,
 } as const;
