@@ -52,11 +52,13 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
   );
 
   const method = (config.methods ?? 'GET').toLowerCase();
+
+  const obj =
+    method === 'get' ? { params: config.data } : { data: config.data };
+
   return new Promise((resolve, reject) => {
     // @ts-ignore
-    instance[method](basePath + config.url, {
-      data: config.data,
-    })
+    instance[method](basePath + config.url, obj)
       .then((res: { data: T | PromiseLike<T> }) => resolve(res.data))
       .catch(reject);
   });
