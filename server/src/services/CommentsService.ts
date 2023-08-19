@@ -3,7 +3,6 @@ import Comments, {
   AddComment,
   GetComments,
   IComment,
-  RemoveComment,
   UpdateComment,
 } from '@src/models/Comments';
 import genera from '@src/models/genera';
@@ -47,9 +46,9 @@ async function addOne(data: AddComment): Promise<IComment> {
   }
 }
 
-async function removeOne(filter: RemoveComment): Promise<void> {
+async function removeOne(_id: string): Promise<void> {
   try {
-    await db.CommentModel.findOneAndRemove(filter);
+    await db.CommentModel.findOneAndRemove({ _id });
   } catch (error) {
     throw new RouteError(
       HttpStatusCodes.INTERNAL_SERVER_ERROR,

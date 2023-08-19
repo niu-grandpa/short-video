@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import Icon from '~/assets/images/user-placeholder.jpg';
-import { UpdateUser } from '~/server/src/models/User';
+import { IUser } from '~/server/src/models/User';
 import UserApi from '~/services/UserApi';
 
 // 个人信息数据流
@@ -43,7 +43,7 @@ export const useProfileStore = defineStore('profile', {
       }
     },
 
-    async updateProfile(data: UpdateUser) {
+    async updateProfile(data: IUser) {
       await UserApi.update(data);
     },
   },

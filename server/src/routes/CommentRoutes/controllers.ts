@@ -1,10 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import {
-  AddComment,
-  GetComments,
-  RemoveComment,
-  UpdateComment,
-} from '@src/models/Comments';
+import { AddComment, GetComments, UpdateComment } from '@src/models/Comments';
 import CommentsService from '@src/services/CommentsService';
 import { IReq, IReqQuery, IRes } from '../types/types';
 
@@ -30,9 +25,8 @@ async function update(req: IReq<{ data: UpdateComment }>, res: IRes) {
   return res.status(HttpStatusCodes.OK).end();
 }
 
-// @ts-ignore
-async function remove(req: IReqQuery<RemoveComment>, res: IRes) {
-  await CommentsService.removeOne(req.query);
+async function remove(req: IReqQuery<{ _id: string }>, res: IRes) {
+  await CommentsService.removeOne(req.query._id);
   return res.status(HttpStatusCodes.OK).end();
 }
 

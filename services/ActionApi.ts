@@ -37,11 +37,11 @@ async function likeVideo(data: IFavorites): Promise<void> {
 /**
  * 视频已看过
  */
-async function videoWatched(vid: string): Promise<void> {
+async function videoWatched(_id: string): Promise<void> {
   return await useRequest({
     methods: 'PUT',
     url: '/actions/video-watched',
-    data: { vid },
+    data: { _id },
   });
 }
 
