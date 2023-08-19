@@ -1,16 +1,20 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import Video, { IAddVideo, IVideo } from '@src/models/Video';
+import genera from '@src/models/genera';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
 import { GenericPagination } from '@src/routes/types/types';
 import { VIDEO_NOT_FOUND_ERR } from './ActionService';
+import UserService from './UserService';
 
 async function getAll({
   page,
   size,
   sort,
 }: GenericPagination): Promise<IVideo[]> {
+  const syncInfo = genera.updateOnceAuthorInfo(1);
   try {
+    await syncInfo(UserService.getAll, db.CommentModel);
     // @ts-ignore
     return await db.VideoModel.find({})
       .sort({ created_at: sort ?? 1 })

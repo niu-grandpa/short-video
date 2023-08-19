@@ -6,12 +6,15 @@ import Comments, {
   RemoveComment,
   UpdateComment,
 } from '@src/models/Comments';
+import genera from '@src/models/genera';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
 import UserService from './UserService';
 
 async function getList(opts: GetComments): Promise<IComment[]> {
+  const syncInfo = genera.updateOnceAuthorInfo(1);
   try {
+    await syncInfo(UserService.getAll, db.CommentModel);
     const { belong, page, size, sort, level } = opts;
     // @ts-ignore
     return await db.CommentModel.find({ belong, level })
