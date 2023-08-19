@@ -10,7 +10,7 @@ type UseSrcollLoadingOptions<T> = Partial<{
     url?: string;
     page: number;
     size: number;
-    sort?: string;
+    sort?: -1 | 1;
     onlyFromList?: T[];
     error?: () => void;
   };
@@ -24,8 +24,8 @@ const defaultOptions = {
     url: '',
     page: 1,
     size: 10,
-    sort: '',
     error: void 0,
+    sort: void 0,
     onlyFromList: void 0,
   },
 };
@@ -35,16 +35,44 @@ export const useSrcollLoading = <T = unknown>(
   hook: (data: T[]) => void,
   options: UseSrcollLoadingOptions<T> = defaultOptions
 ) => {
-  const elHeight = el.offsetHeight;
   const opts = { ...defaultOptions, ...options };
-  const hasMore = ref(false);
+  const { url, size, sort, error, onlyFromList } = opts.request;
 
-  let res: T[] = [],
-    { url, page, size, sort, error, onlyFromList } = opts.request,
+  const total = [];
+  const containerH = el.offsetHeight;
+
+  let temp: T[] = [],
+    { page } = opts.request,
     startPos = page === 1 ? 0 : page;
 
   el.style.height = opts.maxHeight;
   el.style.overflowY = 'auto';
+
+  const loadMore = async () => {
+    if (!url && !onlyFromList) {
+      printf(
+        'error',
+        'You must add <url> or <onlyFromList> props for loading data'
+      );
+      return;
+    }
+    if (onlyFromList?.length) {
+      if (total.length >= onlyFromList.length) {
+        printf('info', 'all loaded!');
+      } else {
+        const endPos = startPos + size;
+        temp = onlyFromList.slice(startPos, endPos);
+        total.push(...temp);
+        startPos = endPos;
+      }
+    } else if (url) {
+      temp = (await requsetData()) as T[];
+      if (!temp.length) {
+        printf('info', 'all requests completed!');
+      }
+    }
+    hook?.(temp);
+  };
 
   const requsetData = async () => {
     try {
@@ -63,55 +91,15 @@ export const useSrcollLoading = <T = unknown>(
     }
   };
 
-  const loadMore = async () => {
-    if (!url && !onlyFromList) {
-      printf(
-        'error',
-        'You must add <url> or <onlyFromList> props for loading data'
-      );
-      return;
-    }
-    if (onlyFromList?.length) {
-      if (res.length >= onlyFromList.length) {
-        hasMore.value = false;
-        printf('info', 'all loaded!');
-      } else {
-        hasMore.value = true;
-        const endPos = startPos + size;
-        res = onlyFromList.slice(startPos, endPos);
-        startPos = endPos;
-      }
-    } else if (url) {
-      hasMore.value = true;
-      res = (await requsetData()) as T[];
-      if (!res.length) {
-        hasMore.value = false;
-        printf('info', 'all requests completed!');
-      }
-    }
-    hook?.(res);
-  };
-
   const onScroll = useDebounce(() => {
     const { scrollTop, scrollHeight } = el;
-    if (~~(scrollTop + elHeight) >= scrollHeight) {
+    if (~~(scrollTop + containerH) >= scrollHeight) {
       loadMore();
     }
   }, opts.delay);
 
   if (opts.immediately) loadMore();
-
-  watchEffect(() => {
-    if (!hasMore.value) {
-      el.removeEventListener('scroll', onScroll);
-    } else {
-      el.addEventListener('scroll', onScroll);
-    }
-  });
-
-  onBeforeUnmount(() => {
-    el.removeEventListener('scroll', onScroll);
-  });
+  el.addEventListener('scroll', onScroll);
 };
 
 const printf = (type: 'info' | 'error', msg: string) => {
