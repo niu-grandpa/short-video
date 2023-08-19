@@ -22,16 +22,16 @@ async function getOne(req: IReqQuery<{}>, res: IRes) {
 /**
  * Update one user.
  */
-async function update(req: IReq<IUser>, res: IRes) {
-  await UserService.updateOne(req.headers.authorization!, req.body);
+async function update(req: IReq<{ data: IUser }>, res: IRes) {
+  await UserService.updateOne(req.headers.authorization!, req.body.data);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * User login.
  */
-async function login(req: IReq<UserLogin>, res: IRes) {
-  const { token, ...rest } = req.body;
+async function login(req: IReq<{ data: UserLogin }>, res: IRes) {
+  const { token, ...rest } = req.body.data;
   // @ts-ignore
   const uid = await UserService.login(token ?? rest);
   return res.status(HttpStatusCodes.OK).json({ data: uid });

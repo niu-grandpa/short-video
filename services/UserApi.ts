@@ -1,8 +1,6 @@
 import { useRequest } from '@/hooks';
 import { AddUser, IUser } from '@/server/src/models/User';
 
-async function login(data: string): Promise<string>;
-async function login(data: AddUser): Promise<string>;
 async function login(_data: string | AddUser): Promise<string> {
   const data = typeof _data === 'string' ? { token: _data } : _data;
   return await useRequest<string>({

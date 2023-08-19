@@ -32,7 +32,6 @@ export interface UpdateComment {
 
 export interface RemoveComment {
   _id: string;
-  belong: string;
   level: CommentLevel;
 }
 

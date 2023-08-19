@@ -20,13 +20,13 @@ async function get(
   return res.status(HttpStatusCodes.OK).json({ data });
 }
 
-async function add(req: IReq<AddComment>, res: IRes) {
-  const data = await CommentsService.addOne(req.body);
+async function add(req: IReq<{ data: AddComment }>, res: IRes) {
+  const data = await CommentsService.addOne(req.body.data);
   return res.status(HttpStatusCodes.OK).json({ data });
 }
 
-async function update(req: IReq<UpdateComment>, res: IRes) {
-  await CommentsService.updateOne(req.body);
+async function update(req: IReq<{ data: UpdateComment }>, res: IRes) {
+  await CommentsService.updateOne(req.body.data);
   return res.status(HttpStatusCodes.OK).end();
 }
 

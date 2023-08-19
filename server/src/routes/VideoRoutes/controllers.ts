@@ -34,8 +34,8 @@ async function random(_: IReqQuery<{}>, res: IRes) {
 /**
  * 添加视频
  */
-async function add(req: IReq<IAddVideo>, res: IRes) {
-  const data = await VideoService.addOne(req.body);
+async function add(req: IReq<{ data: IAddVideo }>, res: IRes) {
+  const data = await VideoService.addOne(req.body.data);
   return res.status(HttpStatusCodes.OK).json({ data });
 }
 

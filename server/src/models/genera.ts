@@ -25,6 +25,9 @@ function updateOnceAuthorInfo(
   };
 }
 
+function validation() {}
+
 export default {
+  validation,
   updateOnceAuthorInfo,
 } as const;
