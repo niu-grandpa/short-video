@@ -1,5 +1,5 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { AddUser, IUser } from '@src/models/User';
+import { IUser, UserLogin } from '@src/models/User';
 import UserService from '@src/services/UserService';
 import { IReq, IReqQuery, IRes } from '../types/types';
 
@@ -22,27 +22,18 @@ async function getOne(req: IReqQuery<{}>, res: IRes) {
 /**
  * Update one user.
  */
-async function update(req: IReq<{ data: IUser }>, res: IRes) {
-  await UserService.updateOne(req.headers.authorization!, req.body.data);
+async function update(req: IReq<IUser>, res: IRes) {
+  await UserService.updateOne(req.headers.authorization!, req.body);
   return res.status(HttpStatusCodes.OK).end();
 }
 
 /**
  * User login.
  */
-async function login(
-  req: IReq<{ data: { token: string } & AddUser }>,
-  res: IRes
-) {
-  const { data } = req.body;
-  let _data;
-  if (data?.token) {
-    _data = data.token;
-  } else {
-    _data = data;
-  }
+async function login(req: IReq<UserLogin>, res: IRes) {
+  const { token, ...rest } = req.body;
   // @ts-ignore
-  const uid = await UserService.login(_data);
+  const uid = await UserService.login(token ?? rest);
   return res.status(HttpStatusCodes.OK).json({ data: uid });
 }
 

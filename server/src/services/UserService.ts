@@ -1,45 +1,66 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import User, { AddUser, IUser } from '@src/models/User';
+import User, { AddUser, IUser, UserLogin } from '@src/models/User';
 import db from '@src/mongodb';
 import { RouteError } from '@src/other/classes';
 
-export const USER_NOT_FOUND_ERR = 'User not found';
-export const USER_ALREADY_EXISTS = 'User already exists';
-export const USER_LOGGED_IN = 'User logged in';
-export const USER_LOGIN_EXPIRED = 'User login session has expired';
-
 async function getAll(): Promise<IUser[]> {
-  return await db.UserModel.find();
+  try {
+    return await db.UserModel.find();
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to get users'
+    );
+  }
+}
+
+async function getRandom(): Promise<IUser[]> {
+  try {
+    return await db.UserModel.aggregate([{ $sample: { size: 4 } }]);
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'Failed to get random users'
+    );
+  }
 }
 
 async function getOne(token: string): Promise<IUser> {
   const user = await db.UserModel.findOne({ token });
   if (!user) {
-    throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'User not found');
   }
   // @ts-ignore
   return user;
 }
 
-async function getProfile(uid: string) {
+async function getProfile(uid: string): Promise<Partial<IUser>> {
   const user = await db.UserModel.findOne({ uid });
   if (!user) {
-    throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'User not found');
   }
   const { token, logged, phoneNumber, ...rest } = user;
+  // @ts-ignore
   return rest;
 }
 
-async function addOne({ phoneNumber, code }: AddUser): Promise<string> {
-  const res = await db.UserModel.findOne({ phoneNumber });
+async function addOne(data: AddUser): Promise<object> {
+  const res = await db.UserModel.findOne({ phoneNumber: data.phoneNumber });
   if (res) {
-    throw new RouteError(HttpStatusCodes.OK, USER_ALREADY_EXISTS);
+    throw new RouteError(HttpStatusCodes.OK, 'User already exists');
   }
-  const newUser = User.new(phoneNumber, code);
-  await new db.UserModel({
-    ...newUser,
-  }).save();
-  return newUser.token;
+  try {
+    const newUser = User.new(data);
+    await new db.UserModel({
+      ...newUser,
+    }).save();
+    return { uid: newUser.uid, token: newUser.token };
+  } catch (error) {
+    throw new RouteError(
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      'User registration failed'
+    );
+  }
 }
 
 async function updateOne(
@@ -54,53 +75,45 @@ async function updateOne(
       avatar: newData.avatar ?? oldData.avatar,
       nickname: newData.nickname ?? oldData.nickname,
       user_sign: newData.user_sign ?? oldData.user_sign,
-      privacy_settings: newData.permissions ?? oldData.permissions,
+      permissions: newData.permissions ?? oldData.permissions,
     };
     await db.UserModel.updateOne({ token }, { $set: update });
   } catch (error) {
     throw new RouteError(
-      HttpStatusCodes.INTERNAL_SERVER_ERROR,
-      'Failed to update user'
+      HttpStatusCodes.NOT_FOUND,
+      'Failed to update user profile, maybe the user does not exist'
     );
   }
 }
 
 function hasSessionExpired(token: string): boolean {
-  const res = User.isTokenExpired(token);
-  if (res) {
-    throw new RouteError(HttpStatusCodes.UNAUTHORIZED, USER_LOGIN_EXPIRED);
-  }
-  return false;
+  return User.isTokenExpired(token);
 }
 
-async function login(token: string): Promise<string>;
-async function login(obj: AddUser): Promise<string>;
-async function login(params: string | AddUser): Promise<string> {
-  let filterKey = {},
-    token = '';
+async function login({ token, ...rest }: UserLogin): Promise<string | object> {
+  // 如果用户存在则登录后返回token，否则新建用户并返回 {uid,token}
+  let returnVal: string | object = '';
 
-  if (typeof params === 'string') {
-    if (!hasSessionExpired(params)) filterKey = { token: params };
-  } else {
-    filterKey = { phoneNumber: params.phoneNumber };
-    await db.UserModel.updateOne(filterKey, {
-      $set: { token: User.setUserToken(params) },
-    });
+  const update = { $set: { logged: true } };
+
+  if (token) {
+    if (hasSessionExpired(token)) {
+      throw new RouteError(
+        HttpStatusCodes.UNAUTHORIZED,
+        'User login has expired'
+      );
+    }
+    await db.UserModel.findOneAndUpdate({ token }, update);
+    returnVal = token;
+  } else if (rest) {
+    try {
+      await db.UserModel.findOneAndUpdate(rest, update);
+    } catch (error) {
+      // 不存在则创建新用户
+      returnVal = await addOne(rest);
+    }
   }
-
-  const user = await db.UserModel.findOne(filterKey);
-  token = user?.token ?? '';
-
-  if (!user && typeof params !== 'string') {
-    const { phoneNumber, code } = params;
-    token = await addOne({ phoneNumber, code });
-  } else if (user?.logged) {
-    throw new RouteError(HttpStatusCodes.TOO_MANY_REQUESTS, USER_LOGGED_IN);
-  }
-
-  await db.UserModel.updateOne(filterKey, { $set: { logged: true } });
-
-  return token;
+  return returnVal;
 }
 
 async function logout(token: string): Promise<void> {
@@ -112,6 +125,7 @@ export default {
   logout,
   getAll,
   getOne,
+  getRandom,
   addOne,
   updateOne,
   getProfile,
