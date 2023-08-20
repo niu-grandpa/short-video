@@ -1,5 +1,5 @@
 import { useRequest } from '@/hooks';
-import { IUser, UserLogin } from '@/server/src/models/User';
+import { IUser, UserLogin } from './types/user_api';
 
 export interface LoginResult {
   uid: string;

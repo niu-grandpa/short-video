@@ -4,7 +4,7 @@ import {
   GetComments,
   IComment,
   UpdateComment,
-} from '~/server/src/models/Comments';
+} from './types/comment_api';
 
 /**
  * 获取评论列表 - 分页

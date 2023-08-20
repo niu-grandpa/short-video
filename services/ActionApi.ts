@@ -1,5 +1,5 @@
 import { useRequest } from '~/hooks';
-import { IFavorites, IFollowing } from '~/server/src/models/Action';
+import { IFavorites, IFollowing } from './types/action_api';
 
 /**
  * 关注某人

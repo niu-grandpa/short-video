@@ -1,6 +1,6 @@
 import { useRequest } from '~/hooks';
-import { IAddVideo, IVideo } from '~/server/src/models/Video';
-import { GenericPagination } from '~/server/src/routes/types/types';
+import { GenericPagination } from './types/comment_api';
+import { IAddVideo, IVideo } from './types/video_api';
 
 /**
  * 获取视频列表 - 分页

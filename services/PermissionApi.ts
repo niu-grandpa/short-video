@@ -1,5 +1,5 @@
 import { useRequest } from '~/hooks';
-import { IPUser, IPVideo } from '~/server/src/models/Permission';
+import { IPUser, IPVideo } from './types/permission_api';
 
 /**
  * 设置用户个人权限
