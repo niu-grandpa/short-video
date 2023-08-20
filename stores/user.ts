@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { IPUser, IPVideo } from '~/server/src/models/Permission';
-import { UserLogin, UserRoles } from '~/server/src/models/User';
 import PermissionApi from '~/services/PermissionApi';
 import UserApi from '~/services/UserApi';
+import { IPUser, IPVideo } from '~/services/types/permission_api';
+import { UserLogin, UserRoles } from '~/services/types/user_api';
 import { useGeneralStore } from './general';
 
 // 用户行为数据流
@@ -25,7 +25,6 @@ export const useUserStore = defineStore('user', {
   actions: {
     restData() {
       this.$state.uid = '';
-      this.$state.token = '';
       this.$state.phoneNumber = '';
       this.$state.posts = [];
       this.$state.permissions = {
@@ -34,6 +33,7 @@ export const useUserStore = defineStore('user', {
         lock_favorited: false,
       };
       this.$state.role = UserRoles.Standard;
+      this.setToken('');
     },
 
     getToken() {
@@ -52,7 +52,7 @@ export const useUserStore = defineStore('user', {
      */
 
     async hasSessionExpired() {
-      await UserApi.isExpired();
+      return await UserApi.isExpired();
     },
 
     async login(data: UserLogin) {

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import Icon from '~/assets/images/user-placeholder.jpg';
-import { IUser } from '~/server/src/models/User';
+import { IUser } from '~/services/types/user_api';
 import UserApi from '~/services/UserApi';
 
 // 个人信息数据流
@@ -8,7 +7,7 @@ export const useProfileStore = defineStore('profile', {
   persist: true,
 
   state: () => ({
-    icon: Icon,
+    icon: '',
     post: null,
     gender: 0,
     favorites: 0, // 我的收藏

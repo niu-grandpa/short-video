@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia';
-import { IFavorites, IFollowing } from '~/server/src/models/Action';
-import {
-  AddComment,
-  GetComments,
-  UpdateComment,
-} from '~/server/src/models/Comments';
-import { IAddVideo } from '~/server/src/models/Video';
-import { GenericPagination } from '~/server/src/routes/types/types';
 import ActionApi from '~/services/ActionApi';
 import CommentApi from '~/services/CommentApi';
 import VideoApi from '~/services/VideoApi';
+import { IFavorites, IFollowing } from '~/services/types/action_api';
+import {
+  AddComment,
+  GenericPagination,
+  GetComments,
+  UpdateComment,
+} from '~/services/types/comment_api';
+import { IAddVideo } from '~/services/types/video_api';
 import { useProfileStore } from './profile';
 import { useUserStore } from './user';
 
