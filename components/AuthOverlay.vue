@@ -131,13 +131,10 @@ const onFinish = async ({
 }: AddUser & { remember: boolean }) => {
   confirmLoading.value = true;
   try {
-    const token = await $userStore.login({ phoneNumber, code });
-    if (remember) {
-      $userStore.setToken(token);
-      $generalStore.isAutoLogin = true;
-    }
+    await $userStore.login({ phoneNumber, code });
     message.success('欢迎回来~');
     $generalStore.isLoginOpen = false;
+    $generalStore.isAutoLogin = remember;
   } catch (error) {
     message.error('登录失败');
   } finally {

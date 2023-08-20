@@ -77,15 +77,15 @@ const onToUpload = useASDCallback(() => {
   router.push('/upload');
 });
 
-const onLogout = () => {
-  $userStore
-    .logout()
-    .then(() => {
-      router.replace('/');
-      $userStore.restData();
-      $profileStore.restData();
-      $generalStore.restData();
-    })
-    .catch(() => message.error('退出登录失败'));
+const onLogout = async () => {
+  try {
+    await $userStore.logout();
+    router.replace('/');
+    $userStore.restData();
+    $profileStore.restData();
+    $generalStore.restData();
+  } catch (error) {
+    message.error('退出登录失败');
+  }
 };
 </script>
