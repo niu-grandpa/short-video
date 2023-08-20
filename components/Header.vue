@@ -34,8 +34,9 @@
           <AAvatar
             :src="$profileStore.icon"
             size="large"
-            class="ml-[8px] mb-[3px]" />
-
+            class="ml-[8px] mb-[1px] flex items-center justify-center">
+            <template #icon><UserOutlined /></template>
+          </AAvatar>
           <ClientOnly>
             <ADropdown trigger="click" placement="bottom">
               <MoreOutlined style="font-size: 24px" />

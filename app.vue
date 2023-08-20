@@ -5,18 +5,17 @@
   </ClientOnly>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { message } from 'ant-design-vue';
 
 const { $generalStore, $userStore, $profileStore } = useNuxtApp();
 
-const { token, uid } = toRefs($userStore);
-
 const router = useRouter();
 
+// 同步本地数据
 onMounted(async () => {
-  if (token.value) {
-    // 检查session是否过期
+  const token = await $userStore.getToken();
+  if (token && $generalStore.getAutoLogin()) {
     if (await $userStore.hasSessionExpired()) {
       router.replace('/');
       $generalStore.restData();
@@ -24,9 +23,10 @@ onMounted(async () => {
       $profileStore.restData();
       $generalStore.isLoginOpen = true;
       message.info('登录已过期');
-      // 自动登录
-    } else if (!uid.value && $generalStore.isAutoLogin) {
-      await $userStore.login({ token: token.value });
+    } else {
+      // @ts-ignore
+      await $userStore.login({ token });
+      await $generalStore.getUserData();
     }
   }
 });

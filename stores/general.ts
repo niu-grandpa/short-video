@@ -30,19 +30,33 @@ export const useGeneralStore = defineStore('general', {
       this.$state.backUrl = url;
     },
 
+    getAutoLogin(): boolean {
+      const res = localStorage.getItem('auto_login') === 'true' ?? false;
+      this.$state.isAutoLogin = res;
+      return res;
+    },
+
+    setAutoLogin(val: boolean) {
+      this.$state.isAutoLogin = val;
+      localStorage.setItem('auto_login', `${val}`);
+    },
+
     getUserData() {
-      return Promise.all([useUserStore().getOne, useProfileStore().getProfile]);
+      return Promise.all([
+        useUserStore().getOne(),
+        useProfileStore().getProfile(),
+      ]);
     },
 
     restData() {
       this.$state.backUrl = '/';
       this.$state.isLoginOpen = false;
-      this.$state.isAutoLogin = false;
       this.$state.replyData = {
         postId: '',
         isReplySub: false,
         commentObj: undefined,
       };
+      this.setAutoLogin(false);
     },
 
     /*

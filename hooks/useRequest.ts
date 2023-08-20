@@ -29,8 +29,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
   // 添加请求拦截器
   instance.interceptors.request.use(
     config => {
-      config.withCredentials = true;
-      config.headers.Authorization = localStorage.getItem('user_token');
+      config.headers.Authorization = userStore.token;
       return config;
     },
     error => {

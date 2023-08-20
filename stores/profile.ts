@@ -31,6 +31,7 @@ export const useProfileStore = defineStore('profile', {
 
     async getProfile(uid?: string) {
       const res = await UserApi.profile(uid);
+      // 没有传入uid说明是查看本人信息，用的是token请求
       if (!uid) {
         this.$state.icon = res.avatar;
         this.$state.gender = res.gender;

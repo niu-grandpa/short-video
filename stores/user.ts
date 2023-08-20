@@ -3,7 +3,6 @@ import PermissionApi from '~/services/PermissionApi';
 import UserApi from '~/services/UserApi';
 import { IPUser, IPVideo } from '~/services/types/permission_api';
 import { UserLogin, UserRoles } from '~/services/types/user_api';
-import { useGeneralStore } from './general';
 
 // 用户行为数据流
 export const useUserStore = defineStore('user', {
@@ -36,9 +35,12 @@ export const useUserStore = defineStore('user', {
       this.setToken('');
     },
 
-    getToken() {
+    getToken(): Promise<string | null> {
       const token = localStorage.getItem('user_token');
       this.$state.token = token ?? '';
+      return new Promise(res => {
+        res(token);
+      });
     },
 
     // 当勾选自动登录时，调用此方法
@@ -63,7 +65,6 @@ export const useUserStore = defineStore('user', {
         this.setToken(res.token);
         this.$state.uid = res.uid;
       }
-      await useGeneralStore().getUserData();
     },
 
     async logout() {

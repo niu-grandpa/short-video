@@ -1,5 +1,7 @@
 # Short Video (short-video)
 
+> 后端项目地址: <https://github.com/niu-grandpa/short-video-api>
+
 ## 简介
 
 一个短视频点播平台
@@ -28,7 +30,19 @@ pinia：vuex替代品-轻量级-使用方便
 
 - 跨域问题
 
-  - 使用nginx反向代理。下载nginx接着修改目录下，nginx.conf配置文件，在 location / 里面添加proxy_pass属性，设置前端的url，接着添加location /api/，在里面也添加proxy_pass属性，设置后端url，之后启动nginx服务即可解决
+  - 在后端使用 `cors` 中间件，配置允许与前端某个地址通信
+
+    ```ts
+    app.use(cors({
+      origin(origin, callback) {
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    }));
+    ```
 
 - Nuxt使用antd菜单组件会出现"document is not defined"
 

@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
 import { FormInstance, Rule } from 'ant-design-vue/es/form';
-import { AddUser } from '~/server/src/models/User';
+import { AddUser } from '~/services/types/user_api';
 
 interface FormState {
   phoneNumber: string;
@@ -132,9 +132,10 @@ const onFinish = async ({
   confirmLoading.value = true;
   try {
     await $userStore.login({ phoneNumber, code });
+    await $generalStore.getUserData();
     message.success('欢迎回来~');
     $generalStore.isLoginOpen = false;
-    $generalStore.isAutoLogin = remember;
+    $generalStore.setAutoLogin(remember);
   } catch (error) {
     message.error('登录失败');
   } finally {

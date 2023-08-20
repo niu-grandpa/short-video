@@ -42,7 +42,6 @@ async function update(data: IUser): Promise<void> {
 
 async function profile(uid?: string): Promise<IUser> {
   return await useRequest<IUser>({
-    methods: 'PUT',
     url: '/users/profile',
     data: { uid },
   });
@@ -50,7 +49,7 @@ async function profile(uid?: string): Promise<IUser> {
 
 async function isExpired(): Promise<boolean> {
   return await useRequest<boolean>({
-    url: '/users/profile',
+    url: '/users/has-session-expired',
   });
 }
 

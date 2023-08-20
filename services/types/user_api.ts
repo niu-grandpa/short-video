@@ -36,6 +36,6 @@ export interface AddUser {
   code: string;
 }
 
-export interface UserLogin extends AddUser {
+export interface UserLogin extends Partial<AddUser> {
   token?: string;
 }
