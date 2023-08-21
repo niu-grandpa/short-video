@@ -10,9 +10,9 @@ export const useProfileStore = defineStore('profile', {
     icon: '',
     post: null,
     gender: 0,
-    favorites: 0, // 我的收藏
-    following: 0, // 我关注的人
-    followers: 0, // 粉丝数
+    favorites: Array<string>(), // 我的收藏
+    following: Array<string>(), // 我关注的人
+    followers: Array<string>(), // 粉丝数
     nickname: '未登录',
     user_sign: '',
   }),
@@ -21,11 +21,11 @@ export const useProfileStore = defineStore('profile', {
     restData() {
       this.$state.icon = '';
       this.$state.gender = 0;
-      this.$state.favorites = 0;
       this.$state.nickname = '未登录';
       this.$state.user_sign = '';
-      this.$state.followers = 0;
-      this.$state.following = 0;
+      this.$state.favorites = [];
+      this.$state.followers = [];
+      this.$state.following = [];
       this.$state.post = null;
     },
 
@@ -37,10 +37,11 @@ export const useProfileStore = defineStore('profile', {
         this.$state.gender = res.gender;
         this.$state.nickname = res.nickname;
         this.$state.user_sign = res.user_sign;
-        this.$state.favorites = res.favorites.length;
-        this.$state.followers = res.followers.length;
-        this.$state.following = res.following.length;
+        this.$state.favorites = res.favorites;
+        this.$state.followers = res.followers;
+        this.$state.following = res.following;
       }
+      return res;
     },
 
     async updateProfile(data: IUser) {

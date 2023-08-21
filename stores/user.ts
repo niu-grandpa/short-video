@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import PermissionApi from '~/services/PermissionApi';
 import UserApi from '~/services/UserApi';
-import { IPUser, IPVideo } from '~/services/types/permission_api';
-import { UserLogin, UserRoles } from '~/services/types/user_api';
+import { IPVideo } from '~/services/types/permission_api';
+import { IUser, UserLogin, UserRoles } from '~/services/types/user_api';
 
 // 用户行为数据流
 export const useUserStore = defineStore('user', {
@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
     uid: '',
     token: '',
     role: UserRoles.Standard,
-    posts: [-1],
+    posts: Array<number>(),
     phoneNumber: '',
     permissions: {
       no_access: false,
@@ -37,7 +37,7 @@ export const useUserStore = defineStore('user', {
 
     getToken(): Promise<string | null> {
       const token = localStorage.getItem('user_token');
-      this.$state.token = token ?? '';
+      token && this.setToken(token);
       return new Promise(res => {
         res(token);
       });
@@ -93,8 +93,9 @@ export const useUserStore = defineStore('user', {
      * 调用权限接口的方法
      */
 
-    async setUserPermissions(data: IPUser) {
+    async setUserPermissions(data: IUser['permissions']) {
       await PermissionApi.user(data);
+      this.$state.permissions = data;
     },
 
     async setVideoPermissions(data: IPVideo) {

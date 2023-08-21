@@ -5,7 +5,6 @@ import VideoApi from '~/services/VideoApi';
 import { IFavorites, IFollowing } from '~/services/types/action_api';
 import {
   AddComment,
-  GenericPagination,
   GetComments,
   UpdateComment,
 } from '~/services/types/comment_api';
@@ -83,16 +82,12 @@ export const useGeneralStore = defineStore('general', {
      * 调用视频接口的方法
      */
 
-    async getVideos(data: GenericPagination) {
-      return await VideoApi.list(data);
-    },
-
-    async getVideo(vid: string) {
+    async getOneVideo(vid: string) {
       return await VideoApi.one(vid);
     },
 
-    async getRandomVideo() {
-      return await VideoApi.random();
+    async getRandomVideo(size = 1) {
+      return await VideoApi.random(size);
     },
 
     async uploadVideo(data: IAddVideo) {
