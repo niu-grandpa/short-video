@@ -1,7 +1,7 @@
 import { useDebounce } from './useDebounce';
 import { useRequest } from './useRequest';
 
-type UseSrcollLoadingOptions<T> = Partial<{
+export type UseSrcollLoadingOptions<T = unknown> = Partial<{
   delay: number;
   loop: boolean;
   maxHeight: string;
@@ -41,12 +41,10 @@ export const useSrcollLoading = <T = unknown>(
   const total = [];
   const containerH = el.offsetHeight;
 
-  let temp: T[] = [],
+  let hasMore = true,
+    temp: T[] = [],
     { page } = opts.request,
-    startPos = page === 1 ? 0 : page;
-
-  el.style.height = opts.maxHeight;
-  el.style.overflowY = 'auto';
+    startPos = page;
 
   const loadMore = async () => {
     if (!url && !onlyFromList) {
@@ -58,6 +56,7 @@ export const useSrcollLoading = <T = unknown>(
     }
     if (onlyFromList?.length) {
       if (total.length >= onlyFromList.length) {
+        hasMore = false;
         printf('info', 'all loaded!');
       } else {
         const endPos = startPos + size;
@@ -66,35 +65,31 @@ export const useSrcollLoading = <T = unknown>(
         startPos = endPos;
       }
     } else if (url) {
-      temp = (await requsetData()) as T[];
-      if (!temp.length) {
-        printf('info', 'all requests completed!');
+      try {
+        temp = await useRequest<T[]>({
+          url: url!,
+          data: { page, size, sort },
+        });
+        if (!temp.length) {
+          printf('info', 'all requests completed!');
+        }
+        hasMore = temp.length !== 0;
+      } catch (err) {
+        error?.();
+        printf('error', `${err}`);
       }
     }
-    hook?.(temp);
-  };
 
-  const requsetData = async () => {
-    try {
-      const data = await useRequest<T[]>({
-        url: url!,
-        data: {
-          page: page!++,
-          size,
-          sort,
-        },
-      });
-      return data;
-    } catch (err) {
-      error?.();
-      printf('error', `${err}`);
-    }
+    hook?.(temp);
   };
 
   const onScroll = useDebounce(() => {
     const { scrollTop, scrollHeight } = el;
     if (~~(scrollTop + containerH) >= scrollHeight) {
-      loadMore();
+      if (hasMore) {
+        page++;
+        loadMore();
+      }
     }
   }, opts.delay);
 
