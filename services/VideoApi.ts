@@ -1,16 +1,5 @@
 import { useRequest } from '~/hooks';
-import { GenericPagination } from './types/comment_api';
 import { IAddVideo, IVideo } from './types/video_api';
-
-/**
- * 获取视频列表 - 分页
- */
-async function list(data: GenericPagination): Promise<IVideo[]> {
-  return await useRequest({
-    url: '/videos/list',
-    data,
-  });
-}
 
 /**
  * 获取单个视频
@@ -25,9 +14,10 @@ async function one(_id: string): Promise<IVideo> {
 /**
  * 获取随机视频
  */
-async function random(): Promise<IVideo> {
+async function random(size: number): Promise<IVideo[]> {
   return await useRequest({
     url: '/videos/random',
+    data: { size },
   });
 }
 
@@ -54,7 +44,6 @@ async function remove(_id: string): Promise<void> {
 }
 
 export default {
-  list,
   one,
   random,
   upload,
