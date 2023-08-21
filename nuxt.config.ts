@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     },
   },
   vite: {
+    // 按需加载antd，提高编译速度、打包后的体积
     plugins: [
       Components({
         resolvers: [
@@ -31,6 +32,7 @@ export default defineNuxtConfig({
       },
     },
     ssr: {
+      // 排除要ssr的模块，提高渲染速度
       noExternal: [
         'moment',
         'compute-scroll-into-view',
