@@ -1,10 +1,11 @@
 import { useRequest } from '~/hooks';
-import { IPUser, IPVideo } from './types/permission_api';
+import { IPVideo } from './types/permission_api';
+import { IUser } from './types/user_api';
 
 /**
  * 设置用户个人权限
  */
-async function user(data: IPUser): Promise<void> {
+async function user(data: IUser['permissions']): Promise<void> {
   return await useRequest({
     methods: 'PUT',
     url: '/permissions/set-user',

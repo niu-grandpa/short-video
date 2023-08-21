@@ -39,12 +39,14 @@
           </AAvatar>
           <ClientOnly>
             <ADropdown trigger="click" placement="bottom">
-              <MoreOutlined style="font-size: 24px" />
+              <MoreOutlined
+                style="font-size: 24px"
+                class="flex items-center justify-center" />
               <template #overlay>
                 <AMenu>
                   <AMenuItem>
                     <NuxtLink
-                      :to="`/profile${$userStore.uid}`"
+                      :to="`/profile/${$userStore.uid}`"
                       class="flex items-center">
                       <UserOutlined class="mr-[3px]" /> 个人信息
                     </NuxtLink>

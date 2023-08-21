@@ -15,10 +15,10 @@ export interface IUser {
   role: UserRoles;
   token: string;
   logged: boolean;
-  posts: number[];
-  favorites: number[];
-  following: number[];
-  followers: number[];
+  posts: string[];
+  favorites: string[];
+  following: string[];
+  followers: string[];
   phoneNumber: string;
   nickname: string;
   avatar: string;

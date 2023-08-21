@@ -23,7 +23,7 @@
 import { useASDCallback } from '@/hooks';
 
 const props = defineProps<{
-  postId: number;
+  postId: string;
   likes: number;
   comments: number;
   star: number;

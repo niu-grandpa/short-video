@@ -1,8 +1,10 @@
 <template>
   <AAvatar
-    class="mt-[3px]"
+    class="mt-[2px] flex items-center justify-center"
     :src="$props.src"
-    :size="{ xs: 24, sm: 32, md: 40, lg: 56, xl: 70, xxl: 90 }" />
+    :size="{ xs: 24, sm: 32, md: 40, lg: 56, xl: 70, xxl: 90 }">
+    <template #icon><UserOutlined /></template>
+  </AAvatar>
   <CameraTwoTone
     @click="() => inputRef?.click()"
     class="absolute bottom-[6px] right-[24px] cursor-pointer"
