@@ -4,12 +4,14 @@ export const enum CommentLevel {
 }
 
 export interface IComment {
-  _id?: string;
+  cid: string;
   uid: string;
   avatar: string;
   author: string;
   belong: string;
-  likes: number[];
+  replies: number;
+  likes: string[];
+  dislikes: string[];
   content: string;
   level: CommentLevel;
   created_at: number;
@@ -24,13 +26,13 @@ export interface AddComment {
 }
 
 export interface UpdateComment {
-  _id: string;
+  cid: string;
   content: string;
 }
 
 export interface LikeComment {
   uid: string;
-  _id: string;
+  cid: string;
   flag: boolean;
 }
 
