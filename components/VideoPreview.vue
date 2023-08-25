@@ -8,11 +8,11 @@
       <section class="absolute w-full top-[12px] px-[6px] text-white z-20">
         <ARow justify="center">
           <ACol :span="5">
-            <NuxtLink to="/profile/1">
-              <AAvatar
+            <NuxtLink :to="`/profile/${data.uid}`">
+              <Avatar
                 :size="42"
-                :src="data.avatar"
-                class="border-3 border-white" />
+                :src="avatar"
+                class="border-3 border-white ml-[0]" />
             </NuxtLink>
           </ACol>
 
@@ -54,11 +54,12 @@
         muted
         ref="videoRef"
         :src="data.url"
-        @click="() => $router.push(`/post/${data._id}`)"
+        preload="metadata"
+        @click="onToDetail"
         class="object-cover mx-auto h-full cursor-pointer rounded-xl" />
 
       <VideoActionBar
-        :postId="data._id!"
+        :postId="data.vid"
         :likes="data.likes.length"
         :comments="0"
         :star="data.favorites.length" />
@@ -71,13 +72,15 @@
 </template>
 
 <script setup lang="ts">
-import { useASDCallback, useDebounce } from '@/hooks';
 import { message } from 'ant-design-vue';
+import { useASDCallback, useAdjustVideoBuffering, useDebounce } from '~/hooks';
 import { IVideo } from '~/services/types/video_api';
 
 const { $userStore, $profileStore, $generalStore } = useNuxtApp();
 
 const props = defineProps<{ dataSource: object }>();
+
+const router = useRouter();
 
 const data = ref<IVideo>(props.dataSource as IVideo);
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -86,23 +89,30 @@ const isFollow = ref($profileStore.following.includes(data.value.uid));
 const isHover = ref(false);
 const ellipsis = ref(true);
 const spinning = ref(true);
+const avatar = ref('');
 const authorFollowers = ref(0);
 
-onMounted(async () => {
-  try {
-    const { following } = await $profileStore.getProfile(data.value.uid);
-    authorFollowers.value = following.length;
-  } catch (error) {
-    console.warn('user not found');
-  }
-});
+const adjustBuffering = useAdjustVideoBuffering(videoRef.value!);
 
 onMounted(() => {
   if (videoRef.value) {
-    videoRef.value.addEventListener(
-      'loadeddata',
-      () => (spinning.value = false)
+    videoRef.value.onloadeddata = () => {
+      adjustBuffering();
+      spinning.value = false;
+    };
+    videoRef.value.load();
+  }
+});
+
+onMounted(async () => {
+  try {
+    const { avatar: ava, following } = await $profileStore.getProfile(
+      data.value.uid
     );
+    avatar.value = ava;
+    authorFollowers.value = following.length;
+  } catch (error) {
+    console.warn('user not found');
   }
 });
 
@@ -125,4 +135,10 @@ const onFollow = useASDCallback(async () => {
     message.error('关注失败');
   }
 });
+
+const onToDetail = async () => {
+  const { vid } = data.value;
+  await $generalStore.watched(vid);
+  router.push(`/post/${vid}`);
+};
 </script>
