@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useGeneralStore } from '~/stores/general';
-import { useProfileStore } from '~/stores/profile';
 import { useUserStore } from '~/stores/user';
 
 type UseRequest = {
@@ -17,7 +16,6 @@ const basePath = '/api';
 
 export function useRequest<T>(config: UseRequest): Promise<T> {
   const userStore = useUserStore();
-  const profileStore = useProfileStore();
   const generalStore = useGeneralStore();
 
   const instance = axios.create({
@@ -27,19 +25,24 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
   });
 
   // 添加请求拦截器
-  instance.interceptors.request.use(
-    config => {
-      config.headers.Authorization = userStore.token;
-      return config;
-    },
+  instance.interceptors.request.use(config => {
+    config.headers.Authorization = userStore.token;
+    return config;
+  });
+
+  // 响应拦截
+  instance.interceptors.response.use(
+    v => v,
     error => {
-      switch (error) {
+      const {
+        response: { status },
+      } = error;
+      switch (status) {
         case 401: // 无权限
+        case 502: // Bad Gateway
         case 503: // 服务器问题
-          userStore.restData();
-          profileStore.restData();
-          generalStore.restData();
-          window.location.href = '/';
+          generalStore.restAll();
+          location.href !== '/' && (location.href = '/');
           break;
         case 500:
           alert('Oh! 服务器出了一些问题');
