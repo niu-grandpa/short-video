@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <title>{{ nickname }}的个人空间_short-viedo</title>
+    <title>{{ profile.nickname }}的个人空间_short-viedo</title>
   </Head>
 
   <ClientOnly>
@@ -11,37 +11,36 @@
       :closable="false"
       okText="保存"
       cancelText="取消"
-      @ok="handlePermission"
+      @ok="onSetPermission"
       @cancel="() => (open = false)">
       <p class="my-[18px]">
         不允许任何人看:
-        <ASwitch
-          v-model:checked="permissions.no_access"
-          class="ml-[18px] bg-[#00000040]" />
+        <ASwitch v-model:checked="noAccess" class="ml-[18px] bg-[#00000040]" />
       </p>
       <p class="mb-[18px]">
         不允许查看个人:
-        <ASwitch
-          v-model:checked="permissions.lock_posts"
-          class="ml-[18px] bg-[#00000040]" />
+        <ASwitch v-model:checked="lockPosts" class="ml-[18px] bg-[#00000040]" />
       </p>
       不允许查看收藏:
       <ASwitch
-        v-model:checked="permissions.lock_favorited"
+        v-model:checked="lockFavorited"
         class="ml-[18px] bg-[#00000040]" />
     </AModal>
   </ClientOnly>
 
   <MainLayout>
     <AResult
-      v-if="!isSelf && no_access"
+      v-if="!isSelf && noAccess"
       status="403"
       title="该用户不允许任何人查看" />
     <template v-else>
       <ACard class="w-[95%] m-auto border-0">
         <ARow>
           <ACol :span="2" class="relative">
-            <AvatarWithUpload :src="icon" @change="onImgChange" />
+            <AvatarWithUpload
+              :hidden="isSelf"
+              :src="profile.avatar"
+              @change="onImgChange" />
           </ACol>
 
           <ACol :span="22">
@@ -51,17 +50,17 @@
                   v-if="isSelf"
                   :level="3"
                   :editable="{ maxlength: 36 }"
-                  v-model:content="nickname">
-                  {{ nickname }}
+                  v-model:content="profile.nickname">
+                  {{ profile.nickname }}
                 </ATypographyTitle>
                 <ATypographyTitle v-else :level="3">
-                  {{ nickname }}
+                  {{ profile.nickname }}
                 </ATypographyTitle>
               </ClientOnly>
               <span
-                v-if="gender"
-                class="relative left-[18px] top-[-6px] text-[22px]"
-                :class="`text-[${isMan ? ' #1890ff' : 'red'}]`">
+                v-if="profile.gender"
+                class="ml-[18px] text-[18px]"
+                :style="{ color: isMan ? '#1890ff' : 'red' }">
                 <ManOutlined v-if="isMan" />
                 <WomanOutlined v-else />
               </span>
@@ -70,7 +69,7 @@
             <section class="flex w-full items-center justify-between">
               <template v-if="isSelf">
                 <AInput
-                  v-model:value="user_sign"
+                  v-model:value="profile.user_sign"
                   placeholder="编辑个性签名"
                   class="w-[60%] ml-[-8px] border-0 hover:border" />
                 <AButton class="flex items-center" @click="() => (open = true)">
@@ -80,11 +79,17 @@
 
               <template v-else>
                 <ATypographyText class="text-gray-500">
-                  {{ user_sign || '该用户很懒，没有留下任何签名' }}
+                  {{ profile.user_sign || '该用户很懒，没有留下任何签名' }}
                 </ATypographyText>
                 <ASpace>
-                  <AButton :disabled="false" type="primary" class="px-[24px]">
-                    关注
+                  <AButton
+                    class="px-[24px]"
+                    @click="onFollow"
+                    :type="isFollowing ? 'default' : 'primary'">
+                    <template v-if="isFollowing">
+                      <CheckOutlined /> 已关注
+                    </template>
+                    <span v-else>关注</span>
                   </AButton>
                   <AButton>发消息</AButton>
                 </ASpace>
@@ -95,13 +100,13 @@
 
         <ARow class="mt-[14px]">
           <ACol :span="2">
-            <strong>{{ fomartter(followers.length) }}</strong> 粉丝
+            <strong>{{ fomartter(profile.followers) }}</strong> 粉丝
           </ACol>
           <ACol :span="2">
-            <strong>{{ fomartter(following.length) }}</strong> 已关注
+            <strong>{{ fomartter(profile.following) }}</strong> 已关注
           </ACol>
           <ACol>
-            <strong>{{ fomartter(favorites.length) }}</strong> 收藏
+            <strong>{{ fomartter(profile.favorites) }}</strong> 收藏
           </ACol>
         </ARow>
       </ACard>
@@ -113,20 +118,22 @@
               <template #tab>
                 <p
                   class="w-[180px] text-center flex items-center justify-center">
-                  <LockFilled v-if="!isSelf && lock_posts" />个人视频
+                  <LockFilled
+                    v-if="!isSelf && permissions.lock_posts" />个人视频
                 </p>
               </template>
-              <AResult status="403" v-if="!isSelf && lock_posts" />
+              <AResult status="403" v-if="!isSelf && permissions.lock_posts" />
               <UserVideo v-else />
             </ATabPane>
             <ATabPane key="following">
               <template #tab>
                 <p
                   class="w-[180px] text-center flex items-center justify-center">
-                  <LockFilled v-if="!isSelf && lock_favorited" />已收藏
+                  <LockFilled
+                    v-if="!isSelf && permissions.lock_favorited" />已收藏
                 </p>
               </template>
-              <AResult status="403" v-if="!isSelf && lock_posts" />
+              <AResult status="403" v-if="!isSelf && permissions.lock_posts" />
               <UserVideo v-else />
             </ATabPane>
           </ATabs>
@@ -139,47 +146,66 @@
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
 import MainLayout from '~/layouts/MainLayout.vue';
-import { IUser } from '~/services/types/user_api';
+import { IUser, UserGender } from '~/services/types/user_api';
 
 definePageMeta({ middleware: 'auth' });
 
-const { $userStore, $profileStore } = useNuxtApp();
+const {
+  $userStore: { uid, permissions, setUserPermissions },
+  $profileStore,
+  $generalStore: { following },
+} = useNuxtApp();
 
 const {
-  uid,
-  permissions: {
-    value: { no_access, lock_posts, lock_favorited },
-  },
-} = toRefs($userStore);
+  params: { id },
+} = useRoute();
 
-const { icon, gender, user_sign, nickname, favorites, followers, following } =
-  toRefs($profileStore);
+const isSelf = uid === id;
 
-const route = useRoute();
-
-const fomartter = (num: number): string | number => {
-  if (num < 1000) return num;
-  return computed(() => (num / 1000).toFixed(1)) + 'K';
+const fomartter = (nums: string[]): string | number => {
+  const len = nums.length;
+  if (len < 1000) return len;
+  return computed(() => (len / 1000).toFixed(1)) + 'K';
 };
 
 const open = ref(false);
+const isMan = ref(true);
+const noAccess = ref(false);
+const lockPosts = ref(false);
+const lockFavorited = ref(false);
+const isFollowing = ref(false);
 const isEditName = ref(false);
-const isMan = ref(gender.value === 1);
-const isSelf = ref(uid.value === route.params.id);
-
-const activeKey = ref(!lock_posts ? 'video' : '');
+const activeKey = ref('video');
 const nameInputRef = ref<HTMLSpanElement | null>(null);
+const profile = ref<IUser>({ ...$profileStore.$state } as any);
 
-const permissions = ref<IUser['permissions']>({
-  no_access,
-  lock_posts,
-  lock_favorited,
+onMounted(async () => {
+  if (!isSelf) {
+    // get other
+    profile.value = await $profileStore.getProfile(id as string);
+    isFollowing.value = $profileStore.following.includes(id as string);
+  } else {
+    // get myself
+    profile.value = await $profileStore.getProfile();
+  }
+  initData(profile.value);
 });
+
+const initData = ({
+  gender,
+  permissions: { no_access, lock_posts, lock_favorited },
+}: IUser) => {
+  noAccess.value = no_access;
+  lockPosts.value = lock_posts;
+  lockFavorited.value = lock_favorited;
+  isMan.value = gender === UserGender.Man;
+  activeKey.value = lock_posts ? '' : 'video';
+};
 
 const onRename = (e: any) => {
   if (!e.target.contains(nameInputRef.value)) {
     isEditName.value = false;
-    $profileStore.nickname = nickname.value;
+    $profileStore.nickname = profile.value!.nickname;
   }
 };
 
@@ -203,14 +229,28 @@ const onImgChange = (coordinates: {
   console.log(coordinates);
 };
 
-const handlePermission = async () => {
+const onSetPermission = async () => {
   try {
-    await $userStore.setUserPermissions(permissions.value);
+    await setUserPermissions(profile.value!.permissions);
     open.value = false;
     message.success('修改成功');
   } catch (error) {
-    permissions.value = $userStore.permissions;
+    profile.value!.permissions = permissions;
     message.error('修改失败');
   }
+};
+
+const onFollow = async () => {
+  const flag = !isFollowing.value;
+  await following({ uid, someone: id as string, flag });
+  if (flag) {
+    profile.value.followers.push(uid);
+    message.success('关注成功');
+  } else {
+    const { followers } = profile.value;
+    profile.value.followers = followers.filter(item => item !== uid);
+    message.info('已取消关注');
+  }
+  isFollowing.value = flag;
 };
 </script>
