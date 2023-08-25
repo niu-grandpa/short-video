@@ -59,10 +59,11 @@
         class="object-cover mx-auto h-full cursor-pointer rounded-xl" />
 
       <VideoActionBar
-        :postId="data.vid"
-        :likes="data.likes.length"
-        :comments="0"
-        :star="data.favorites.length" />
+        :post-id="data.vid"
+        :author-id="data.uid"
+        :likes="data.likes"
+        :comments="data.comments"
+        :favorites="data.favorites" />
 
       <PlayCircleOutlined
         v-show="!isHover"
@@ -76,15 +77,20 @@ import { message } from 'ant-design-vue';
 import { useASDCallback, useAdjustVideoBuffering, useDebounce } from '~/hooks';
 import { IVideo } from '~/services/types/video_api';
 
-const { $userStore, $profileStore, $generalStore } = useNuxtApp();
+const {
+  $userStore: { uid },
+  $profileStore: { following, getProfile },
+  $generalStore: { watched, following: onFollowing },
+} = useNuxtApp();
 
 const props = defineProps<{ dataSource: object }>();
 
 const router = useRouter();
 
 const data = ref<IVideo>(props.dataSource as IVideo);
+
 const videoRef = ref<HTMLVideoElement | null>(null);
-const isFollow = ref($profileStore.following.includes(data.value.uid));
+const isFollow = ref(following.includes(data.value.uid));
 
 const isHover = ref(false);
 const ellipsis = ref(true);
@@ -92,13 +98,12 @@ const spinning = ref(true);
 const avatar = ref('');
 const authorFollowers = ref(0);
 
-const adjustBuffering = useAdjustVideoBuffering(videoRef.value!);
-
 onMounted(() => {
   if (videoRef.value) {
+    const adjustBuffering = useAdjustVideoBuffering(videoRef.value!);
     videoRef.value.onloadeddata = () => {
-      adjustBuffering();
       spinning.value = false;
+      adjustBuffering();
     };
     videoRef.value.load();
   }
@@ -106,9 +111,7 @@ onMounted(() => {
 
 onMounted(async () => {
   try {
-    const { avatar: ava, following } = await $profileStore.getProfile(
-      data.value.uid
-    );
+    const { avatar: ava, following } = await getProfile(data.value.uid);
     avatar.value = ava;
     authorFollowers.value = following.length;
   } catch (error) {
@@ -124,13 +127,13 @@ const onVideoHover = useDebounce((flag: boolean) => {
 const onFollow = useASDCallback(async () => {
   try {
     const flag = !isFollow.value;
-    await $generalStore.following({
-      uid: $userStore.uid,
+    await onFollowing({
+      uid,
       someone: data.value.uid,
       flag,
     });
     isFollow.value = flag;
-    flag && message.success('关注成功');
+    flag && message.success('已成功');
   } catch (error) {
     message.error('关注失败');
   }
@@ -138,7 +141,7 @@ const onFollow = useASDCallback(async () => {
 
 const onToDetail = async () => {
   const { vid } = data.value;
-  await $generalStore.watched(vid);
+  await watched(vid);
   router.push(`/post/${vid}`);
 };
 </script>
