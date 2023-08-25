@@ -127,7 +127,7 @@ import { message } from 'ant-design-vue';
 import { FileType } from 'ant-design-vue/es/upload/interface';
 import { UploadLayout } from '~/layouts';
 
-// definePageMeta({ middleware: 'auth' });
+definePageMeta({ middleware: 'auth' });
 
 const { $userStore } = useNuxtApp();
 
