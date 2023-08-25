@@ -47,6 +47,12 @@ export const useGeneralStore = defineStore('general', {
       ]);
     },
 
+    restAll() {
+      this.restData();
+      useUserStore().restData();
+      useProfileStore().restData();
+    },
+
     restData() {
       this.$state.backUrl = '/';
       this.$state.isLoginOpen = false;
@@ -97,6 +103,10 @@ export const useGeneralStore = defineStore('general', {
     async removeVideo(vid: string) {
       await VideoApi.remove(vid);
     },
+
+    /*
+     * 调用评论接口的方法
+     */
 
     async getComments(data: GetComments) {
       return await CommentApi.list(data);
