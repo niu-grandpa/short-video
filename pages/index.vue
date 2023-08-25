@@ -9,17 +9,16 @@
     <AAffix :offset-top="56">
       <AButton
         v-if="videos.length"
-        type="primary"
         :loading="loading"
         @click="onChange"
-        class="relative left-[90%] top-[16px]">
+        class="relative left-[90%] top-[16px] bg-[white]">
         <template #icon><ReloadOutlined /></template>
         换一批
       </AButton>
     </AAffix>
 
     <ARow v-if="videos.length" :gutter="[48, 64]" class="py-[42px]">
-      <ACol :span="6" v-for="item in videos" :key="item._id">
+      <ACol :span="6" v-for="item in videos" :key="item.vid">
         <VideoPreview :data-source="item" />
       </ACol>
     </ARow>

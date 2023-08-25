@@ -41,11 +41,11 @@ async function edit(data: UpdateComment): Promise<void> {
 /**
  * 删除评论
  */
-async function remove(_id: string): Promise<void> {
+async function remove(cid: string): Promise<void> {
   return await useRequest({
     methods: 'DELETE',
     url: '/comments/delete',
-    data: { _id },
+    data: { cid },
   });
 }
 

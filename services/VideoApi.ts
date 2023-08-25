@@ -4,10 +4,10 @@ import { IAddVideo, IVideo } from './types/video_api';
 /**
  * 获取单个视频
  */
-async function one(_id: string): Promise<IVideo> {
+async function one(vid: string): Promise<IVideo> {
   return await useRequest({
     url: '/videos/one',
-    data: { _id },
+    data: { vid },
   });
 }
 
@@ -35,11 +35,11 @@ async function upload(data: IAddVideo): Promise<void> {
 /**
  * 删除视频
  */
-async function remove(_id: string): Promise<void> {
+async function remove(vid: string): Promise<void> {
   return await useRequest({
     methods: 'DELETE',
     url: '/videos/delete',
-    data: { _id },
+    data: { vid },
   });
 }
 

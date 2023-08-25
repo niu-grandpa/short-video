@@ -4,6 +4,7 @@ import { useRequest } from './useRequest';
 export type UseSrcollLoadingOptions<T = unknown> = Partial<{
   delay: number;
   loop: boolean;
+  reload: boolean;
   maxHeight: string;
   immediately: boolean;
   request: {
@@ -18,6 +19,7 @@ export type UseSrcollLoadingOptions<T = unknown> = Partial<{
 
 const defaultOptions = {
   delay: 200,
+  reload: false,
   maxHeight: '100vh',
   immediately: false,
   request: {
@@ -93,7 +95,7 @@ export const useSrcollLoading = <T = unknown>(
     }
   }, opts.delay);
 
-  if (opts.immediately) loadMore();
+  if (opts.immediately || opts.reload) loadMore();
   el.addEventListener('scroll', onScroll);
 };
 

@@ -22,6 +22,7 @@
 .ant-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .ant-btn-primary {
@@ -30,4 +31,8 @@
 
 .ant-btn-primary:disabled {
   background-color: #0000000a !important;
+}
+
+.anticon {
+  vertical-align: 0;
 }

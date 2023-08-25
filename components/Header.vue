@@ -16,7 +16,6 @@
         <AButton
           size="large"
           @click="onToUpload"
-          class="flex items-center px-3 py-[6px]"
           style="height: 36px; padding: 0 22px">
           <VideoCameraAddOutlined class="text-[20px]" />
           上传
@@ -24,19 +23,17 @@
 
         <AButton
           type="primary"
+          size="large"
           v-if="!$userStore.uid"
-          class="px-[30px] pb-[30px] text-[16px]"
+          style="height: 36px; padding: 0 33px"
           @click="() => ($generalStore.isLoginOpen = true)">
           登录
         </AButton>
 
         <template v-else>
-          <AAvatar
-            :src="$profileStore.icon"
-            size="large"
-            class="ml-[8px] mb-[1px] flex items-center justify-center">
+          <Avatar class="ml-[8px] mb-[1px]">
             <template #icon><UserOutlined /></template>
-          </AAvatar>
+          </Avatar>
           <ClientOnly>
             <ADropdown trigger="click" placement="bottom">
               <MoreOutlined

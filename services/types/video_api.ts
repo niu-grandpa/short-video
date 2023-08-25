@@ -1,10 +1,9 @@
 export interface IVideo {
-  _id?: string;
+  vid: string;
   url: string;
   title: string;
   watched: number;
   uid: string;
-  avatar: string;
   author: string;
   likes: number[];
   favorites: number[];
