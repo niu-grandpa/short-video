@@ -1,5 +1,5 @@
 import { useRequest } from '~/hooks';
-import { IFavorites, IFollowing } from './types/action_api';
+import { IFavorites, IFollowing, LikeComment } from './types/action_api';
 
 /**
  * 关注某人
@@ -45,9 +45,21 @@ async function videoWatched(vid: string): Promise<void> {
   });
 }
 
+/**
+ * 点赞评论
+ */
+async function likeComment(data: LikeComment): Promise<void> {
+  return await useRequest({
+    methods: 'PUT',
+    url: '/actions/like-comment',
+    data,
+  });
+}
+
 export default {
   following,
   favorites,
   likeVideo,
   videoWatched,
+  likeComment,
 } as const;

@@ -10,3 +10,8 @@ export interface IFollowing extends IGeneral {
 export interface IFavorites extends IGeneral {
   vid: string;
 }
+
+export interface LikeComment extends IGeneral {
+  cid: string;
+  reset?: boolean;
+}

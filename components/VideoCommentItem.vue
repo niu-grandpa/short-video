@@ -4,48 +4,46 @@
       <span key="comment-basic-like" class="flex items-center" @click="onLike">
         <LikeFilled v-if="action === 'liked'" />
         <LikeOutlined v-else />
-        <span class="pl-[8px]">
+        <span class="pl-[12px]">
           {{ likes }}
         </span>
       </span>
+
       <span
         key="comment-basic-dislike"
         class="flex items-center"
         @click="onDislike">
         <DislikeFilled v-if="action === 'disliked'" />
         <DislikeOutlined v-else />
-        <span class="pl-[8px]">
+        <span class="pl-[12px]">
           {{ dislikes }}
         </span>
       </span>
-      <span
-        key="comment-basic-reply-to"
-        class="relative top-[2px] select-none"
-        @click="onReply">
+
+      <span key="comment-basic-reply-to" @click="() => $emit('reply')">
         回复
       </span>
     </template>
 
     <template #author>
-      <a>{{ props.author }}</a>
+      <NuxtLink :to="`/profile/${data.uid}`">{{ data.author }}</NuxtLink>
     </template>
 
     <template #avatar>
-      <AAvatar :src="props.avatar" />
+      <Avatar :src="data.avatar" />
     </template>
 
     <template #content>
       <ATypographyParagraph
-        :content="props.content"
+        :content="data.content"
         :ellipsis="{ rows: 5, expandable: true, symbol: '展开' }" />
     </template>
 
     <template #datetime>
-      <ATooltip :title="dayjs(props.datetime).format('YYYY-MM-DD HH:mm:ss')">
-        <span>{{ dayjs(props.datetime).fromNow() }}</span>
-      </ATooltip>
+      <span :title="dayjs(data.created_at).format('YYYY-MM-DD HH:mm:ss')">
+        {{ dayjs(data.created_at).fromNow() }}
+      </span>
     </template>
-
     <slot />
   </AComment>
 </template>
@@ -54,62 +52,67 @@
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import relativeTime from 'dayjs/plugin/relativeTime';
-
-export type CommentItemType = {
-  _id: string;
-  parentId?: string;
-  author: string;
-  avatar: string;
-  content: string;
-  likes: number;
-  dislikes: number;
-  datetime: number;
-};
-
-export type CommentData = { parentId: string; id: string; author: string };
+import { IComment } from '~/services/types/comment_api';
 
 dayjs.locale('zh-cn');
 dayjs.extend(relativeTime);
 
-const emit = defineEmits<{ (e: 'reply', res: CommentData): void }>();
-const props = defineProps<CommentItemType>();
+defineEmits(['reply']);
 
-const likes = ref<number>(props.likes);
-const dislikes = ref<number>(props.dislikes);
+const {
+  $userStore: { uid },
+  $generalStore: { likeComment },
+} = useNuxtApp();
+
+const props = defineProps<{ dataSource: object }>();
+
+const data = reactive<IComment>(props.dataSource as IComment);
+
+const defaultLikes = data.likes.length;
+const defaultDislikes = data.dislikes.length;
+
+const likes = ref(defaultLikes);
+const dislikes = ref(defaultDislikes);
 const action = ref<'liked' | 'disliked' | ''>('');
 
-const repetitiveAction = (type: string, v1: Ref<number>, v2: number) => {
+onMounted(() => {
+  if (data.likes.includes(uid)) {
+    action.value = 'liked';
+  } else if (data.dislikes.includes(uid)) {
+    action.value = 'disliked';
+  }
+});
+
+const repetitiveAction = (type: string, val: Ref<number>) => {
   if (action.value === type) {
-    if (v1.value > v2) {
-      v1.value--;
-      action.value = '';
-      return true;
-    }
+    action.value = '';
+    val.value > 0 && val.value--;
+    return true;
   }
 };
 
+const likeParams = { uid, flag: true, cid: data.cid };
+const dislikeParams = { uid, flag: false, cid: data.cid };
+
 const onLike = async () => {
-  if (repetitiveAction('liked', likes, props.likes)) {
+  if (repetitiveAction('liked', likes)) {
+    await likeComment({ ...likeParams, reset: true });
     return;
   }
+  await likeComment(likeParams);
   likes.value++;
-  dislikes.value = props.dislikes;
   action.value = 'liked';
+  dislikes.value = defaultDislikes;
 };
 
 const onDislike = async () => {
-  if (repetitiveAction('disliked', dislikes, props.dislikes)) {
+  if (repetitiveAction('disliked', dislikes)) {
+    await likeComment({ ...dislikeParams, reset: true });
     return;
   }
+  await likeComment(dislikeParams);
   dislikes.value++;
-  likes.value = props.likes;
   action.value = 'disliked';
+  likes.value = defaultLikes;
 };
-
-const onReply = () =>
-  emit('reply', {
-    id: props._id,
-    author: props.author,
-    parentId: props.parentId || '',
-  });
 </script>

@@ -2,7 +2,11 @@ import { defineStore } from 'pinia';
 import ActionApi from '~/services/ActionApi';
 import CommentApi from '~/services/CommentApi';
 import VideoApi from '~/services/VideoApi';
-import { IFavorites, IFollowing } from '~/services/types/action_api';
+import {
+  IFavorites,
+  IFollowing,
+  LikeComment,
+} from '~/services/types/action_api';
 import {
   AddComment,
   GetComments,
@@ -78,6 +82,10 @@ export const useGeneralStore = defineStore('general', {
 
     async likeVideo(data: IFavorites) {
       await ActionApi.likeVideo(data);
+    },
+
+    async likeComment(data: LikeComment) {
+      await ActionApi.likeComment(data);
     },
 
     async watched(vid: string) {
