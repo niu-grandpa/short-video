@@ -4,6 +4,7 @@
     :src="$props.src"
     :size="{ xs: 24, sm: 32, md: 40, lg: 56, xl: 70, xxl: 90 }" />
   <CameraTwoTone
+    v-if="$props.hidden"
     @click="() => inputRef?.click()"
     class="absolute bottom-[6px] right-[24px] cursor-pointer"
     title="更改头像" />
@@ -42,7 +43,7 @@ type Coordinates = {
   left?: number;
 };
 
-defineProps(['src']);
+defineProps(['src', 'hidden']);
 
 const emits = defineEmits(['change']);
 

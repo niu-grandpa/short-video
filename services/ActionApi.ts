@@ -7,7 +7,7 @@ import { IFavorites, IFollowing, LikeComment } from './types/action_api';
 async function following(data: IFollowing): Promise<void> {
   return await useRequest({
     methods: 'PUT',
-    url: '/actions/add-following',
+    url: '/actions/set-following',
     data,
   });
 }
@@ -18,7 +18,7 @@ async function following(data: IFollowing): Promise<void> {
 async function favorites(data: IFavorites): Promise<void> {
   return await useRequest({
     methods: 'PUT',
-    url: '/actions/add-favorites',
+    url: '/actions/set-favorites',
     data,
   });
 }

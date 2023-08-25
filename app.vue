@@ -10,7 +10,7 @@ import { message } from 'ant-design-vue';
 
 const {
   $generalStore,
-  $userStore: { login, getToken, hasSessionExpired },
+  $userStore: { login, getToken, hasSessionExpired, getOne },
 } = useNuxtApp();
 
 const router = useRouter();
@@ -25,9 +25,8 @@ onMounted(async () => {
       $generalStore.isLoginOpen = true;
       message.info('登录已过期');
     } else {
-      // @ts-ignore
       await login({ token });
-      await $generalStore.getUserData();
+      await getOne();
     }
   }
 });

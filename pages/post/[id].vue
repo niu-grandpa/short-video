@@ -32,7 +32,7 @@
         @back="() => $router.push($generalStore.backUrl)" />
 
       <ADivider class="px-[18px]" style="margin: 0; margin-top: 12px">
-        评论区
+        评论区 ({{ videoData?.comments }})
       </ADivider>
 
       <VideoComments
@@ -89,8 +89,6 @@ const videoData = ref<IVideo>();
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 
-const adjustBuffering = useAdjustVideoBuffering(videoRef.value!);
-
 onMounted(async () => {
   try {
     videoData.value = await getOneVideo(vid.value);
@@ -102,6 +100,7 @@ onMounted(async () => {
 onMounted(() => {
   const velm = videoRef.value;
   if (velm) {
+    const adjustBuffering = useAdjustVideoBuffering(velm);
     velm.onloadeddata = () => {
       velm.play();
       adjustBuffering();

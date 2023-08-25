@@ -28,11 +28,9 @@ export const useAdjustVideoBuffering = (video: HTMLVideoElement) => {
     }
   };
 
-  onMounted(() => {
-    // 监听网络状态变化事件
-    window.addEventListener('online', adjust);
-    window.addEventListener('offline', adjust);
-  });
+  // 监听网络状态变化事件
+  window.addEventListener('online', adjust);
+  window.addEventListener('offline', adjust);
 
   return adjust;
 };

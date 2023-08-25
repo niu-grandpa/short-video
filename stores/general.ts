@@ -44,13 +44,6 @@ export const useGeneralStore = defineStore('general', {
       localStorage.setItem('auto_login', `${val}`);
     },
 
-    getUserData() {
-      return Promise.all([
-        useUserStore().getOne(),
-        useProfileStore().getProfile(),
-      ]);
-    },
-
     restAll() {
       this.restData();
       useUserStore().restData();
