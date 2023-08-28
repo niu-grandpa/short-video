@@ -1,5 +1,5 @@
 import { useRequest } from '~/hooks';
-import { IAddVideo, IVideo } from './types/video_api';
+import { GetManyOfVideoByUid, IAddVideo, IVideo } from './types/video_api';
 
 /**
  * 获取单个视频
@@ -18,6 +18,16 @@ async function random(size: number): Promise<IVideo[]> {
   return await useRequest({
     url: '/videos/random',
     data: { size },
+  });
+}
+
+/**
+ * 获取好友视频
+ */
+async function friends(data: GetManyOfVideoByUid): Promise<IVideo[]> {
+  return await useRequest({
+    url: '/videos/random',
+    data,
   });
 }
 
@@ -48,4 +58,5 @@ export default {
   random,
   upload,
   remove,
+  friends,
 };

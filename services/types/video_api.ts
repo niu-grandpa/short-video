@@ -1,3 +1,5 @@
+import { GenericPagination } from './comment_api';
+
 export interface IVideo {
   vid: string;
   url: string;
@@ -21,4 +23,8 @@ export interface IAddVideo {
   title: string;
   name: string;
   uid: string;
+}
+
+export interface GetManyOfVideoByUid extends GenericPagination {
+  uid: string[];
 }
