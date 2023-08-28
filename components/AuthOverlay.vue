@@ -87,7 +87,11 @@ interface FormState {
   remember: boolean;
 }
 
-const { $generalStore, $userStore } = useNuxtApp();
+const {
+  $generalStore,
+  $profileStore: { getProfile },
+  $userStore: { login, getOne },
+} = useNuxtApp();
 
 const formRef = ref<FormInstance>();
 const confirmLoading = ref(false);
@@ -131,11 +135,10 @@ const onFinish = async ({
 }: AddUser & { remember: boolean }) => {
   confirmLoading.value = true;
   try {
-    await $userStore.login({ phoneNumber, code });
-    await $generalStore.getUserData();
-    message.success('欢迎回来~');
+    await login({ phoneNumber, code });
     $generalStore.isLoginOpen = false;
     $generalStore.setAutoLogin(remember);
+    message.success('欢迎回来~');
   } catch (error) {
     message.error('登录失败');
   } finally {

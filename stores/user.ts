@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
     uid: '',
     token: '',
     role: UserRoles.Standard,
-    posts: Array<number>(),
+    posts: Array<string>(),
     phoneNumber: '',
     permissions: {
       no_access: false,

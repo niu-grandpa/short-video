@@ -36,7 +36,7 @@ import { Empty, message } from 'ant-design-vue';
 import { IVideo } from 'services/types/video_api';
 import { MainLayout } from '~/layouts';
 
-const { $generalStore } = useNuxtApp();
+const { $generalStore, $profileStore } = useNuxtApp();
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 

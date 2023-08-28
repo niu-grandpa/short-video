@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useGeneralStore } from '~/stores/general';
-import { useUserStore } from '~/stores/user';
 
 type UseRequest = {
   methods?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -15,7 +14,6 @@ export const baseURL =
 const basePath = '/api';
 
 export function useRequest<T>(config: UseRequest): Promise<T> {
-  const userStore = useUserStore();
   const generalStore = useGeneralStore();
 
   const instance = axios.create({
@@ -26,7 +24,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
 
   // 添加请求拦截器
   instance.interceptors.request.use(config => {
-    config.headers.Authorization = userStore.token;
+    config.headers.Authorization = localStorage.getItem('user_token');
     return config;
   });
 
@@ -42,7 +40,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
         case 502: // Bad Gateway
         case 503: // 服务器问题
           generalStore.restAll();
-          location.href !== '/' && (location.href = '/');
+          setTimeout(() => (location.href = '/'), 500);
           break;
         case 500:
           alert('Oh! 服务器出了一些问题');

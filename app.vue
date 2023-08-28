@@ -10,6 +10,7 @@ import { message } from 'ant-design-vue';
 
 const {
   $generalStore,
+  $profileStore: { getProfile },
   $userStore: { login, getToken, hasSessionExpired, getOne },
 } = useNuxtApp();
 
@@ -27,6 +28,7 @@ onMounted(async () => {
     } else {
       await login({ token });
       await getOne();
+      await getProfile();
     }
   }
 });

@@ -19,7 +19,7 @@
               <span class="lg:block hidden">首页</span>
             </div>
           </AMenuItem>
-          <AMenuItem key="following">
+          <AMenuItem key="friend">
             <div class="flex items-center text-[17px] font-semibold">
               <TeamOutlined class="mx-[4px]" style="font-size: 24px" />
               <span class="lg:block hidden">关注</span>
