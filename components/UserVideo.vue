@@ -9,7 +9,7 @@
         <video
           muted
           ref="videoRef"
-          src="~/public/video.mp4"
+          src=""
           class="object-cover w-full h-full cursor-pointer rounded-xl" />
 
         <section
