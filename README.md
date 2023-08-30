@@ -22,7 +22,7 @@ tailwindcss：
 
 ## 我的职责
 
-- 搭建前后端、编写页面和接口等，使用netlify自动化部署aliyun服务器，mongodb数据库部署，postman测试接口
+- 搭建nuxt项目并使用vercel自动化部署网站，云服务器部署nodejs环境和后端项目、nginx反向代理，数据库使用cloud mongodb快速部署
 
 - 构建应用数据流：使用pinia创建general、profile、user数据流模块，用于持久化存储应用数据、定义数据请求和通用行为等
 
@@ -36,13 +36,15 @@ tailwindcss：
 
 - 负责个人页：实现游客访问权限设置、视频权限可见范围设置，个人信息修改同步到profile数据流和数据库
 
+- 针对nuxt构建包体过大，通过按需引入ant-vue组件，对rollup构建项优化：配置manualChunks对模块最小化拆分包、使用compression、terser、imagemin插件，对文件开启gzip压缩、去除debugger、图片压缩；优化后包体减少1000kb
+
+- 负责对网站进行seo优化，使用useHead钩子在路由组件内定义seo相关属性、对于路由跳转采用打开新页面的方式，让搜索引擎更易理解和处理
+
 ## 遇到的问题
 
 - 跨域问题
 
   - 1.在后端响应头中添加 `Access-Control-Allow-Origin` 字段，指定允许访问的域名
-
-  - 2.前端临时搭建nginx反向代理
 
 - Nuxt使用antd菜单组件会出现"document is not defined"
 
@@ -76,9 +78,15 @@ tailwindcss：
 
 ## 成果和收获
 
-## 其他
+## 性能优化
 
-### 前端在优化视频方面可以采取以下措施
+### 构建&SEO
+
+- 参考1：[vite打包性能优化](https://juejin.cn/post/7232688124416458789)
+
+- 参考2：[Nuxt3如何 进行seo优化](https://juejin.cn/post/7179237881532121149)
+
+### 视频
 
 - 压缩视频：使用适当的视频压缩算法和编解码器来减小视频文件的大小，例如使用H.264或HEVC编码。
 
