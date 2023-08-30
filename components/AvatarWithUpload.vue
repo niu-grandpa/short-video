@@ -5,79 +5,44 @@
     :size="{ xs: 24, sm: 32, md: 40, lg: 56, xl: 70, xxl: 90 }" />
   <CameraTwoTone
     v-if="$props.hidden"
-    @click="() => inputRef?.click()"
+    @click="onClick"
     class="absolute bottom-[6px] right-[24px] cursor-pointer"
     title="更改头像" />
   <input
+    v-if="show"
     type="file"
-    v-if="!openCropper"
     accept=".png,.jpg,.jpeg"
     hidden
     ref="inputRef"
-    @change="onChooseImage" />
-
-  <AModal
-    destroyOnClose
-    :open="openCropper"
-    okText="确定"
-    :closable="false"
-    cancelText="取消"
-    @ok="onConfirm"
-    @cancel="onCloseCropper">
-    <Cropper
-      boundariesClass="w-[472px] h-[427px]"
-      :src="imgSrc"
-      @change="data => (imgCoordinates = data.coordinates)" />
-  </AModal>
+    @change="onChange" />
 </template>
 
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
-import { Cropper } from 'vue-advanced-cropper';
-import 'vue-advanced-cropper/dist/style.css';
-
-type Coordinates = {
-  width?: number;
-  height?: number;
-  top?: number;
-  left?: number;
-};
 
 defineProps(['src', 'hidden']);
-
-const emits = defineEmits(['change']);
 
 const suffix = ['png', 'jpg', 'jpeg'];
 
 const imgSrc = ref('');
-const imgCoordinates = ref<Coordinates>({});
-const openCropper = ref(false);
+const show = ref(false);
 const inputRef = ref<HTMLInputElement | null>(null);
 
-const onChooseImage = ({ target }: any) => {
-  try {
-    const data = target.files[0];
-    const idx = data.name.lastIndexOf('.') + 1;
+const onClick = () => {
+  show.value = true;
+  inputRef.value?.click();
+};
 
-    if (!suffix.includes(data.name.substring(idx))) {
-      message.error('请上传png | jpg | jpeg图片格式');
-      return;
-    }
+const onChange = ({ target }: any) => {
+  const data = target.files[0];
+  const idx = data.name.lastIndexOf('.') + 1;
 
-    openCropper.value = true;
-    imgSrc.value = URL.createObjectURL(data);
-  } catch (error) {
-    message.error('无效的文件格式');
+  if (!suffix.includes(data.name.substring(idx))) {
+    message.error('请上传png | jpg | jpeg图片格式');
+    return;
   }
-};
-
-const onCloseCropper = () => {
-  openCropper.value = false;
-  imgSrc.value = '';
-};
-
-const onConfirm = () => {
-  emits('change', imgCoordinates.value);
-  onCloseCropper();
+  show.value = false;
+  imgSrc.value = URL.createObjectURL(data);
+  // todo
 };
 </script>
