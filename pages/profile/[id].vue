@@ -37,10 +37,7 @@
       <ACard class="w-[95%] m-auto border-0">
         <ARow>
           <ACol :span="2" class="relative">
-            <AvatarWithUpload
-              :hidden="isSelf"
-              :src="profile.avatar"
-              @change="onImgChange" />
+            <AvatarWithUpload :hidden="isSelf" :src="profile.avatar" />
           </ACol>
 
           <ACol :span="22">
@@ -219,15 +216,6 @@ watch(
     }
   }
 );
-
-const onImgChange = (coordinates: {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}) => {
-  console.log(coordinates);
-};
 
 const onSetPermission = async () => {
   try {

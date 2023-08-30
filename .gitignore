@@ -22,4 +22,4 @@ logs
 .env.*
 !.env.example
 
-public/video.mp4
+stats.html

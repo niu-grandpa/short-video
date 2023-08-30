@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useGeneralStore } from '~/stores/general';
 
+import SERVER_URL from '~/services/URL';
+
 type UseRequest = {
   methods?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   url: string;
@@ -9,9 +11,7 @@ type UseRequest = {
 };
 
 export const baseURL =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '';
-
-const basePath = '/api';
+  process.env.NODE_ENV === 'development' ? SERVER_URL.dev : SERVER_URL.prod;
 
 export function useRequest<T>(config: UseRequest): Promise<T> {
   const generalStore = useGeneralStore();
@@ -58,7 +58,7 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
 
   return new Promise((resolve, reject) => {
     // @ts-ignore
-    instance[method](basePath + config.url, obj)
+    instance[method]('/api' + config.url, obj)
       .then((res: { data: T | PromiseLike<T> }) => resolve(res.data))
       .catch(reject);
   });
