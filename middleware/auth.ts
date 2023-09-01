@@ -1,7 +1,11 @@
+import { useGeneralStore } from '~/stores/general';
+import { useUserStore } from '~/stores/user';
+
 // 用户权限检测
-export default defineNuxtRouteMiddleware((to, from) => {
-  // @ts-ignore
-  if (to !== '/' && !localStorage.getItem('user_token')) {
-    return navigateTo('/');
+export default defineNuxtRouteMiddleware(({ path }) => {
+  if ((path === '/friend' || path === '/upload') && !useUserStore().uid) {
+    console.log('访问权限不足');
+    useGeneralStore().isLoginOpen = true;
+    return useRouter().replace('/');
   }
 });

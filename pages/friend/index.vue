@@ -19,6 +19,8 @@ import { message } from 'ant-design-vue';
 import { MainLayout } from '~/layouts';
 import { IVideo } from '~/services/types/video_api';
 
+definePageMeta({ middleware: 'auth' });
+
 const {
   $profileStore: { following },
 } = useNuxtApp();

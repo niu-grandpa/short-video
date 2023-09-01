@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --main-color: #ef4444;
+  --main-bg-color: #fef2f2;
+}
+
 /* 滚动槽 */
 ::-webkit-scrollbar {
   width: 8px;
@@ -26,7 +31,7 @@
 }
 
 .ant-btn-primary {
-  background-color: #1677ff !important;
+  background-color: var(--main-color) !important;
 }
 
 .ant-btn-primary:disabled {
@@ -35,4 +40,9 @@
 
 .anticon {
   vertical-align: 0;
+}
+
+.ant-menu-item-selected {
+  color: var(--main-color) !important;
+  background-color: var(--main-bg-color) !important;
 }

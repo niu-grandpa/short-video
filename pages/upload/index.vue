@@ -129,8 +129,6 @@ import { UploadLayout } from '~/layouts';
 
 definePageMeta({ middleware: 'auth' });
 
-const { $userStore } = useNuxtApp();
-
 const router = useRouter();
 
 // 代表200MB，单位bt
