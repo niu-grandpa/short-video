@@ -36,17 +36,28 @@ import { Empty, message } from 'ant-design-vue';
 import { IVideo } from 'services/types/video_api';
 import { MainLayout } from '~/layouts';
 
-const { $generalStore, $profileStore } = useNuxtApp();
+const {
+  $generalStore: { getRandomVideo },
+} = useNuxtApp();
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE;
 
 const videos = ref<IVideo[]>([]);
 const loading = ref(false);
 
+useAsyncData(async () => {
+  try {
+    const data = await getRandomVideo(8);
+    return (videos.value = data);
+  } catch (err) {
+    return console.log(err);
+  }
+});
+
 const getVideoData = async () => {
   try {
     loading.value = true;
-    const data = await $generalStore.getRandomVideo(8);
+    const data = await getRandomVideo(8);
     videos.value = data;
   } catch (error) {
     message.error('请求数据失败');
@@ -55,8 +66,6 @@ const getVideoData = async () => {
     loading.value = false;
   }
 };
-
-onMounted(getVideoData);
 
 const onChange = async () => {
   window.scrollTo(0, 0);

@@ -89,11 +89,11 @@ const videoData = ref<IVideo>();
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 
-onMounted(async () => {
+useAsyncData(async () => {
   try {
-    videoData.value = await getOneVideo(vid.value);
+    return (videoData.value = await getOneVideo(vid.value));
   } catch (error) {
-    message.error('视频不存在');
+    console.log('视频不存在');
   }
 });
 
