@@ -1,5 +1,5 @@
 <template>
-  <NuxtPage />
+  <NuxtPage :keepalive="{ max: 3 }" />
   <ClientOnly>
     <AuthOverlay />
   </ClientOnly>
