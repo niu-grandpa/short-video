@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { useGeneralStore } from '~/stores/general';
-
 import SERVER_URL from '~/services/URL';
+import { useGeneralStore } from '~/stores/general';
 
 type UseRequest = {
   methods?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   url: string;
   data?: object;
   timeout?: number;
+  notSetToken?: boolean;
 };
 
 export const baseURL =
@@ -24,7 +24,9 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
 
   // 添加请求拦截器
   instance.interceptors.request.use(config => {
-    config.headers.Authorization = localStorage.getItem('user_token');
+    if (process.client) {
+      config.headers.Authorization = localStorage.getItem('user_token');
+    }
     return config;
   });
 
@@ -32,21 +34,26 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
   instance.interceptors.response.use(
     v => v,
     error => {
-      const {
-        response: { status },
-      } = error;
-      switch (status) {
-        case 401: // 无权限
-        case 502: // Bad Gateway
-        case 503: // 服务器问题
-          generalStore.restAll();
-          setTimeout(() => (location.href = '/'), 500);
-          break;
-        case 500:
-          alert('Oh! 服务器出了一些问题');
-          break;
-        default:
-          return Promise.reject(error);
+      if (process.client) {
+        const {
+          response: { status },
+        } = error;
+
+        switch (status) {
+          case 401: // 无权限
+          case 502: // Bad Gateway
+          case 503: // 服务器问题
+            generalStore.restAll();
+            setTimeout(() => {
+              useRouter().replace('/');
+            }, 500);
+            break;
+          case 500:
+            alert('Oh! 服务器出了一些问题');
+            break;
+          default:
+            return Promise.reject(error);
+        }
       }
     }
   );

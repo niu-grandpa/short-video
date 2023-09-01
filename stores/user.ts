@@ -58,13 +58,8 @@ export const useUserStore = defineStore('user', {
     },
 
     async login(data: UserLogin) {
-      const res = await UserApi.login(data);
-      if (typeof res === 'string') {
-        this.setToken(res);
-      } else {
-        this.setToken(res.token);
-        this.$state.uid = res.uid;
-      }
+      const token = await UserApi.login(data);
+      this.setToken(token);
     },
 
     async logout() {

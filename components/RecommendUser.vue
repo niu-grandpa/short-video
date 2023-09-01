@@ -19,15 +19,26 @@
     </NuxtLink>
 
     <div class="ml-[12px] lg:block hidden">
-      <h3 class="font-semibold">{{ item.nickname }}</h3>
-      <span class="text-gray-500 text-xs">{{ item.user_sign }}</span>
+      <ATypographyText
+        strong
+        ellipsis
+        style="width: 82px"
+        :title="item.nickname"
+        :content="item.nickname" />
+      <p>
+        <ATypographyText
+          ellipsis
+          class="text-gray-500 text-xs"
+          style="width: 100px"
+          :title="item.user_sign"
+          :content="item.user_sign || '无个性签名'" />
+      </p>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
-import { useASDCallback } from '~/hooks';
 
 const props = defineProps<{
   dataSource: any[];
@@ -41,10 +52,10 @@ const {
 
 const flag = ref(false);
 
-const onFollowing = useASDCallback(async (someone: string) => {
+const onFollowing = async (someone: string) => {
   const val = !flag.value;
   await following({ uid, someone, flag: val });
   flag.value = val;
   val && message.success('关注成功');
-});
+};
 </script>

@@ -1,12 +1,7 @@
 import { useRequest } from '@/hooks';
 import { IUser, UserLogin } from './types/user_api';
 
-export interface LoginResult {
-  uid: string;
-  token: string;
-}
-
-async function login(data: UserLogin): Promise<LoginResult | string> {
+async function login(data: UserLogin): Promise<string> {
   return await useRequest<string>({
     methods: 'POST',
     url: '/users/login',

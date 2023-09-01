@@ -18,6 +18,9 @@ export default defineNuxtConfig({
     },
   },
   vite: {
+    optimizeDeps: {
+      exclude: ['fsevents'],
+    },
     plugins: [
       visualizer({ open: true }),
       Components({

@@ -48,7 +48,7 @@ export const useSrcollLoading = <T = unknown>(
     { page } = opts.request,
     startPos = page;
 
-  const loadMore = () => {
+  const loadMore = async () => {
     if (!url && !onlyFromList) {
       printf(
         'error',
@@ -67,21 +67,19 @@ export const useSrcollLoading = <T = unknown>(
         startPos = endPos;
       }
     } else if (url) {
-      useAsyncData(async () => {
-        try {
-          temp = await useRequest<T[]>({
-            url: url!,
-            data: { page, size, sort },
-          });
-          if (!temp.length) {
-            printf('info', 'all requests completed!');
-          }
-          hasMore = temp.length !== 0;
-        } catch (err) {
-          error?.();
-          printf('error', `${err}`);
+      try {
+        temp = await useRequest<T[]>({
+          url: url!,
+          data: { page, size, sort },
+        });
+        if (!temp.length) {
+          printf('info', 'all requests completed!');
         }
-      });
+        hasMore = temp.length !== 0;
+      } catch (err) {
+        error?.();
+        printf('error', `${err}`);
+      }
     }
     hook?.(temp);
   };

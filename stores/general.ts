@@ -45,9 +45,11 @@ export const useGeneralStore = defineStore('general', {
     },
 
     restAll() {
-      this.restData();
-      useUserStore().restData();
-      useProfileStore().restData();
+      if (process.client) {
+        this.restData();
+        useUserStore().restData();
+        useProfileStore().restData();
+      }
     },
 
     restData() {

@@ -41,14 +41,14 @@
                 class="flex items-center justify-center" />
               <template #overlay>
                 <AMenu>
-                  <AMenuItem>
+                  <AMenuItem key="my">
                     <NuxtLink
                       :to="`/profile/${$userStore.uid}`"
                       class="flex items-center">
                       <UserOutlined class="mr-[3px]" /> 个人信息
                     </NuxtLink>
                   </AMenuItem>
-                  <AMenuItem @click="onLogout">
+                  <AMenuItem @click="onLogout" key="out">
                     <a href="javascript:;" class="flex items-center">
                       <PoweroffOutlined class="mr-[3px]" /> 退出登录
                     </a>

@@ -3,27 +3,22 @@ import { useUserStore } from '~/stores/user';
 
 export const useASDCallback = (fn: (...args: any[]) => any, to = '') => {
   const router = useRouter();
-  const userStore = useUserStore();
+  const { uid, token, hasSessionExpired } = useUserStore();
   const generalStore = useGeneralStore();
 
-  const rest = () => {
-    generalStore.restAll();
-    generalStore.isLoginOpen = true;
-  };
-
-  if (!userStore.uid) {
+  if (!uid) {
     return () => {
       if (to !== '') router.push(to);
-      rest();
-      console.log('用户未登录');
+      generalStore.isLoginOpen = true;
+      console.log('[useASDCallback]: 用户未登录');
     };
-  } else if (userStore.token) {
+  } else if (token) {
     let isExpired = false;
-    userStore.hasSessionExpired().then(res => (isExpired = res));
+    hasSessionExpired().then(res => (isExpired = res));
     if (isExpired) {
       return () => {
-        rest();
-        console.log('登录会话已过期');
+        generalStore.restAll();
+        console.log('[useASDCallback]: 登录会话已过期');
       };
     }
   }

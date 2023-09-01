@@ -53,7 +53,7 @@
             <div
               class="absolute -bottom-12 flex items-center justify-between z-50 rounded-xl border w-full p-2 border-gray-300">
               <div class="flex items-center truncate">
-                <Icon
+                <a
                   name="clarity:success-standard-line"
                   size="16"
                   class="min-w-[16px]" />
@@ -74,7 +74,7 @@
           <section class="mt-4 mb-6">
             <ul class="flex bg-[#F8F8F8] py-4 px-6">
               <li>
-                <Icon class="mr-4" size="20" name="mdi:box-cutter-off" />
+                <a class="mr-4" size="20" name="mdi:box-cutter-off" />
               </li>
               <li>
                 <p><ATypographyText>剪辑视频</ATypographyText></p>
@@ -128,6 +128,8 @@ import { FileType } from 'ant-design-vue/es/upload/interface';
 import { UploadLayout } from '~/layouts';
 
 definePageMeta({ middleware: 'auth' });
+
+const { $userStore, $generalStore } = useNuxtApp();
 
 const router = useRouter();
 

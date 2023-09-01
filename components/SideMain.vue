@@ -9,10 +9,7 @@
         border-inline-end: 1px solid #0505050f;
       ">
       <ClientOnly>
-        <AMenu
-          v-model:selectedKeys="currentKey"
-          @click="onChangeView"
-          style="border-inline-end: 0">
+        <AMenu v-model:selectedKeys="currentKey" style="border-inline-end: 0">
           <AMenuItem key="home">
             <div class="flex items-center text-[17px] font-semibold">
               <HomeOutlined class="mx-[4px]" style="font-size: 24px" />
@@ -32,24 +29,24 @@
             </div>
           </AMenuItem>
         </AMenu>
-      </ClientOnly>
 
-      <section class="px-[24px] mt-[12px]" v-if="uid">
-        <div class="border-y-[1px] pb-[12px]" v-if="recommendUsers.length">
-          <p class="pt-[14px] mb-[16px] lg:block hidden">推荐用户</p>
-          <RecommendUser :data-source="recommendUsers" />
-          <a
-            class="text-[#ef4444] hover:text-[#f87171]"
-            @click="onGetRecommend">
-            换一换
-          </a>
-        </div>
-        <div class="mt-[6px] pb-[12px] border-b-[1px]" v-if="myFollowing">
-          <p class="pt-[14px] mb-[16px] lg:block hidden">已关注</p>
-          <RecommendUser :data-source="[myFollowing]" following />
-          <a class="text-[#ef4444] hover:text-[#f87171]">查看全部</a>
-        </div>
-      </section>
+        <section class="px-[24px] mt-[12px]" v-if="uid">
+          <div class="border-y-[1px] pb-[12px]" v-if="recommendUsers.length">
+            <p class="pt-[14px] mb-[16px] lg:block hidden">推荐用户</p>
+            <RecommendUser :data-source="recommendUsers" />
+            <a
+              class="text-[#ef4444] hover:text-[#f87171]"
+              @click="onGetRecommend">
+              换一换
+            </a>
+          </div>
+          <div class="mt-[6px] pb-[12px] border-b-[1px]" v-if="myFollowing">
+            <p class="pt-[14px] mb-[16px] lg:block hidden">已关注</p>
+            <RecommendUser :data-source="[myFollowing]" following />
+            <a class="text-[#ef4444] hover:text-[#f87171]">查看全部</a>
+          </div>
+        </section>
+      </ClientOnly>
     </ALayoutSider>
   </AAffix>
 </template>
@@ -74,13 +71,20 @@ const onGetRecommend = async () => {
   recommendUsers.value = await getRecommend();
 };
 
-onMounted(() => {
+onActivated(() => {
   const key = route.path === '/' ? 'home' : route.path.substring(1);
   currentKey.value = [key];
 });
 
+watch(
+  () => currentKey.value,
+  newVal => {
+    const path = newVal[0];
+    router.push(path === 'home' ? '/' : path);
+  }
+);
+
 watchEffect(async () => {
-  // 设置侧边栏选中项
   if (uid) {
     await onGetRecommend();
     if (following.length) {
@@ -104,9 +108,4 @@ onMounted(() => {
 onBeforeMount(() => {
   window.removeEventListener('resize', onResize);
 });
-
-const onChangeView = ({ key }: { key: string }) => {
-  const path = key === 'home' ? '/' : key;
-  router.push(path);
-};
 </script>

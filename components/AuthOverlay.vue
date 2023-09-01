@@ -136,14 +136,16 @@ const onFinish = async ({
   confirmLoading.value = true;
   try {
     await login({ phoneNumber, code });
+    await getOne();
+    await getProfile();
     $generalStore.isLoginOpen = false;
     $generalStore.setAutoLogin(remember);
-    message.success('欢迎回来~');
-    await getProfile();
+    message.success('欢迎您~');
   } catch (error) {
     message.error('登录失败');
   } finally {
     confirmLoading.value = false;
+    formRef.value?.resetFields('code');
   }
 };
 </script>
