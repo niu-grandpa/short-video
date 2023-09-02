@@ -1,27 +1,33 @@
 import { useGeneralStore } from '~/stores/general';
 import { useUserStore } from '~/stores/user';
 
-export const useASDCallback = (fn: (...args: any[]) => any, to = '') => {
-  const router = useRouter();
-  const { uid, token, hasSessionExpired } = useUserStore();
-  const generalStore = useGeneralStore();
-
-  if (!uid) {
-    return () => {
-      if (to !== '') router.push(to);
+/**
+ * 触发事件时用于验证用户权限
+ * @param fn
+ * @returns
+ */
+export const useASDCallback = (fn: (...args: any[]) => any) => {
+  return (...args: any[]) => {
+    const generalStore = useGeneralStore();
+    const { token, hasSessionExpired } = useUserStore();
+    if (!token) {
       generalStore.isLoginOpen = true;
       console.log('[useASDCallback]: 用户未登录');
-    };
-  } else if (token) {
-    let isExpired = false;
-    hasSessionExpired().then(res => (isExpired = res));
-    if (isExpired) {
-      return () => {
+    } else {
+      let isExpired = false;
+      hasSessionExpired().then(res => (isExpired = res));
+      if (isExpired) {
         generalStore.restAll();
+        generalStore.isLoginOpen = true;
         console.log('[useASDCallback]: 登录会话已过期');
-      };
+      } else {
+        try {
+          fn(...args);
+          console.log('[useASDCallback]: token=', token);
+        } catch (error) {
+          console.log('[useASDCallback]: 执行回调时发送错误: ', error);
+        }
+      }
     }
-  }
-
-  return fn;
+  };
 };
