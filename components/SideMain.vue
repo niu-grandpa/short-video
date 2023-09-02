@@ -54,22 +54,16 @@
 <script setup lang="ts">
 import { IUser } from '~/services/types/user_api';
 
-const {
-  $userStore: { uid, getRecommend },
-  $profileStore: { following, getProfile },
-} = useNuxtApp();
+const { $userStore, $profileStore } = useNuxtApp();
 
 const route = useRoute();
 const router = useRouter();
 
+const uid = ref($userStore.uid);
 const currentKey = ref<string[]>([]);
 const siderWidth = ref<number>(220);
 const myFollowing = ref<IUser>();
 const recommendUsers = ref<IUser[]>([]);
-
-const onGetRecommend = async () => {
-  recommendUsers.value = await getRecommend();
-};
 
 onActivated(() => {
   const key = route.path === '/' ? 'home' : route.path.substring(1);
@@ -84,14 +78,22 @@ watch(
   }
 );
 
-watchEffect(async () => {
-  if (uid) {
-    await onGetRecommend();
-    if (following.length) {
-      myFollowing.value = await getProfile(following[0]);
+const onGetRecommend = async () => {
+  recommendUsers.value = await $userStore.getRecommend();
+};
+
+watch(
+  () => uid.value,
+  async newVal => {
+    if (newVal) {
+      await onGetRecommend();
+      const following = $profileStore.following;
+      if (following.length) {
+        myFollowing.value = await $profileStore.getProfile(following[0]);
+      }
     }
   }
-});
+);
 
 const onResize = () => {
   if (window.innerWidth < 1024) {

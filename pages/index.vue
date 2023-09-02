@@ -48,9 +48,9 @@ const loading = ref(false);
 useAsyncData(async () => {
   try {
     const data = await getRandomVideo(8);
-    return (videos.value = data);
+    videos.value = data;
   } catch (err) {
-    return console.log(err);
+    console.log(err);
   }
 });
 
