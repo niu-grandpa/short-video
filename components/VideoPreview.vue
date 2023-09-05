@@ -1,80 +1,93 @@
 <template>
-  <ASpin :spinning="spinning" :delay="800">
-    <section
-      @contextmenu.prevent=""
-      @mouseenter="() => onVideoHover(true)"
-      @mouseleave="() => onVideoHover(false)"
-      class="relative w-[260px] h-[480px] min-h-[480px] max-h-[580px] max-w-[260px] bg-black rounded-xl">
-      <section class="absolute w-full top-[12px] px-[6px] text-white z-20">
-        <ARow justify="center">
-          <ACol :span="5">
-            <NuxtLink :to="`/profile/${data.uid}`">
-              <Avatar
-                :size="42"
-                :src="avatar"
-                class="border-3 border-white ml-[0]" />
-            </NuxtLink>
-          </ACol>
+  <section
+    @contextmenu.prevent=""
+    @mouseenter="() => onHover(true)"
+    @mouseleave="() => onHover(false)"
+    class="relative w-[260px] h-[480px] min-h-[480px] max-h-[580px] max-w-[260px] bg-black cursor-pointer rounded-xl">
+    <AAlert
+      v-if="isFail"
+      banner
+      type="error"
+      message="资源加载失败"
+      class="z-[50] absolute top-[6px] w-full" />
 
-          <ACol :span="18">
-            <section class="font-extrabold">
-              <p
-                class="inline-block max-w-100px w-[100px] overflow-hidden whitespace-nowrap overflow-ellipsis">
-                {{ data.author }}
-              </p>
-              <button
-                @click="onFollow"
-                :class="isFollow ? 'bg-gray-500' : ''"
-                class="ml-[8px] py-[2px] px-[8px] rounded-xl bg-[#ff4d4f] text-[10px]">
-                <span class="mr-[4px]">
-                  <PlusOutlined v-if="!isFollow" />
-                  <CheckOutlined v-else />
-                </span>
-                <span>{{ !isFollow ? '' : '已' }}关注</span>
-              </button>
-            </section>
+    <section class="absolute w-full top-[12px] px-[6px] text-white z-20">
+      <ARow justify="center">
+        <ACol :span="5">
+          <NuxtLink :to="`/profile/${data.uid}`">
+            <Avatar
+              :size="42"
+              :src="avatar"
+              class="border-3 border-white ml-[0]" />
+          </NuxtLink>
+        </ACol>
 
-            <small class="relative top-[-5px]">{{ authorFollowers }}粉丝</small>
-          </ACol>
-        </ARow>
+        <ACol :span="18">
+          <section class="font-extrabold">
+            <p
+              :title="data.author"
+              class="inline-block max-w-100px w-[100px] overflow-hidden whitespace-nowrap overflow-ellipsis">
+              {{ data.author }}
+            </p>
+            <button
+              @click="onFollow"
+              :class="isFollow ? 'bg-gray-500' : ''"
+              class="ml-[8px] py-[2px] px-[8px] rounded-xl bg-[#ff4d4f] text-[10px]">
+              <span class="mr-[4px]">
+                <PlusOutlined v-if="!isFollow" />
+                <CheckOutlined v-else />
+              </span>
+              <span>{{ !isFollow ? '' : '已' }}关注</span>
+            </button>
+          </section>
 
-        <div
-          class="p-[4px] max-w-235px w-[235px] overflow-hidden whitespace-nowrap overflow-ellipsis">
-          <ATypographyText
-            strong
-            :class="{ 'w-[150px]': ellipsis }"
-            class="text-white"
-            :content="data.title" />
-          <small class="block">{{ data.watched }} 播放</small>
-        </div>
-      </section>
+          <small class="relative top-[-5px]">{{ authorFollowers }}粉丝</small>
+        </ACol>
+      </ARow>
 
-      <video
-        loop
-        muted
-        ref="videoRef"
-        :src="data.url"
-        preload="metadata"
-        @click="onToDetail"
-        class="object-cover mx-auto h-full cursor-pointer rounded-xl" />
-
-      <VideoActionBar
-        :post-id="data.vid"
-        :author-id="data.uid"
-        :likes="data.likes"
-        :comments="data.comments"
-        :favorites="data.favorites" />
-
-      <PlayCircleOutlined
-        v-show="!isHover"
-        class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-[3.5rem] text-white" />
+      <div
+        class="p-[4px] max-w-235px w-[235px] overflow-hidden whitespace-nowrap overflow-ellipsis">
+        <ATypographyText
+          strong
+          :class="{ 'w-[150px]': ellipsis }"
+          class="text-white"
+          :content="data.title" />
+        <small class="block">{{ data.watched }} 播放</small>
+      </div>
     </section>
-  </ASpin>
+
+    <div @click="onToDetail" class="w-full h-full">
+      <img
+        v-if="!isHover"
+        loading="eager"
+        ref="imgRef"
+        class="w-full h-full rounded-xl"
+        :src="baseURL + data.poster" />
+      <img
+        v-else
+        loading="lazy"
+        ref="imgRef"
+        class="w-full h-full rounded-xl"
+        :src="baseURL + data.gif" />
+    </div>
+
+    <VideoActionBar
+      :post-id="data.vid"
+      :author-id="data.uid"
+      :likes="data.likes"
+      :comments="data.comments"
+      :favorites="data.favorites" />
+
+    <PlayCircleOutlined
+      v-show="!isHover"
+      class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-[3.5rem] text-white" />
+  </section>
 </template>
 
 <script setup lang="ts">
 import { message } from 'ant-design-vue';
-import { useASDCallback, useAdjustVideoBuffering, useDebounce } from '~/hooks';
+import { useASDCallback, useDebounce } from '~/hooks';
+import { baseURL } from '~/hooks/useRequest';
 import { IVideo } from '~/services/types/video_api';
 
 const {
@@ -89,24 +102,20 @@ const router = useRouter();
 
 const data = ref<IVideo>(props.dataSource as IVideo);
 
-const videoRef = ref<HTMLVideoElement | null>(null);
+const imgRef = ref<HTMLImageElement>();
 const isFollow = ref(following.includes(data.value.uid));
 
 const isHover = ref(false);
 const ellipsis = ref(true);
-const spinning = ref(true);
+const isFail = ref(false);
 const avatar = ref('');
 const authorFollowers = ref(0);
 
 onMounted(() => {
-  if (videoRef.value) {
-    const adjustBuffering = useAdjustVideoBuffering(videoRef.value!);
-    videoRef.value.onloadeddata = () => {
-      spinning.value = false;
-      adjustBuffering();
-    };
-    videoRef.value.load();
-  }
+  imgRef.value!.onerror = () => {
+    isFail.value = true;
+    console.error(`"${data.value.title}" 的资源加载失败`);
+  };
 });
 
 onMounted(async () => {
@@ -119,9 +128,8 @@ onMounted(async () => {
   }
 });
 
-const onVideoHover = useDebounce((flag: boolean) => {
+const onHover = useDebounce((flag: boolean) => {
   isHover.value = flag;
-  videoRef.value![flag ? 'play' : 'pause']();
 }, 500);
 
 const onFollow = useASDCallback(async () => {
