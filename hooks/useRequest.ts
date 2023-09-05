@@ -8,7 +8,7 @@ type UseRequest = {
   url: string;
   data?: object;
   timeout?: number;
-  notSetToken?: boolean;
+  contentType?: string;
 };
 
 type ApiReturnType<T> = {
@@ -18,17 +18,20 @@ type ApiReturnType<T> = {
 export const baseURL =
   process.env.NODE_ENV === 'development' ? SERVER_URL.dev : SERVER_URL.prod;
 
-export function useRequest<T>(config: UseRequest): Promise<T> {
+export function useRequest<T>(cfg: UseRequest): Promise<T> {
   const generalStore = useGeneralStore();
 
   const instance = axios.create({
     baseURL,
     withCredentials: true,
-    timeout: config.timeout ?? 5000,
+    timeout: cfg.timeout ?? 5000,
   });
 
   // 添加请求拦截器
   instance.interceptors.request.use(config => {
+    if (cfg.contentType) {
+      config.headers['Content-Type'] = cfg.contentType;
+    }
     config.headers.Authorization = useUserStore().token;
     return config;
   });
@@ -57,14 +60,28 @@ export function useRequest<T>(config: UseRequest): Promise<T> {
     }
   );
 
-  const method = (config.methods ?? 'GET').toLowerCase();
-  const carry =
-    method === 'get' ? { params: config.data } : { data: config.data };
+  const { url, methods, data, contentType } = cfg;
+  const _methods = (methods ?? 'GET').toLowerCase();
+
+  let carry = {};
+  if (contentType === 'multipart/form-data') {
+    carry = data!;
+  } else if (_methods === 'get' || _methods === 'delete') {
+    carry = { params: data };
+  } else {
+    carry = { data: data };
+  }
 
   return new Promise((resolve, reject) => {
     // @ts-ignore
-    instance[method](`/api${config.url}`, carry)
-      .then(({ data: { data: res } }: ApiReturnType<T>) => resolve(res))
+    instance[_methods](`/api${url}`, carry)
+      .then((res: ApiReturnType<T>) => {
+        if (res?.data?.data) {
+          resolve(res.data.data);
+        } else {
+          resolve([] as any);
+        }
+      })
       .catch(reject);
   });
 }
