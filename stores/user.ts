@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import PermissionApi from '~/services/PermissionApi';
+import UploadApi from '~/services/UploadApi';
 import UserApi from '~/services/UserApi';
 import { IPVideo } from '~/services/types/permission_api';
 import { IUser, UserLogin, UserRoles } from '~/services/types/user_api';
@@ -95,6 +96,18 @@ export const useUserStore = defineStore('user', {
 
     async setVideoPermissions(data: IPVideo) {
       await PermissionApi.video(data);
+    },
+
+    /*
+     * 调用上传接口的方法
+     */
+
+    async uploadVideo(data: FormData) {
+      await UploadApi.video(data);
+    },
+
+    async uploadAvatar(data: FormData) {
+      await UploadApi.avatar(data);
     },
   },
 });
