@@ -1,5 +1,5 @@
 import { useRequest } from '~/hooks';
-import { GetManyOfVideoByUid, IAddVideo, IVideo } from './types/video_api';
+import { GetManyOfVideoByUid, IVideo } from './types/video_api';
 
 /**
  * 获取单个视频
@@ -32,17 +32,6 @@ async function friends(data: GetManyOfVideoByUid): Promise<IVideo[]> {
 }
 
 /**
- * 上传视频
- */
-async function upload(data: IAddVideo): Promise<void> {
-  return await useRequest({
-    methods: 'POST',
-    url: '/videos/upload',
-    data,
-  });
-}
-
-/**
  * 删除视频
  */
 async function remove(vid: string): Promise<void> {
@@ -56,7 +45,6 @@ async function remove(vid: string): Promise<void> {
 export default {
   one,
   random,
-  upload,
   remove,
   friends,
 };
