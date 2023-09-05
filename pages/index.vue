@@ -1,6 +1,12 @@
 <template>
   <Head>
-    <title>short-video 首页</title>
+    <title>Microdio</title>
+    <Meta
+      name="description"
+      content="microdio (microdio.vercel.app) 是一个刷短视频的网站" />
+    <Meta
+      name="keywords"
+      content="Microdio,microdio,short-video,short video,短视频,在线视频网,刷短视频网站,短视频平台,有趣视频,生活视频,热点视频,人物视频,搞笑视频,娱乐视频" />
   </Head>
 
   <MainLayout
