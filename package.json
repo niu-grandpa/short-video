@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "build": "nuxt build  --analyze",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --open",
     "generate": "nuxt generate",
-    "preview": "nuxt preview --port 8000 --host",
+    "preview": "nuxt preview --host 0.0.0.0",
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
