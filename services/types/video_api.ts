@@ -7,6 +7,8 @@ export interface IVideo {
   watched: number;
   uid: string;
   author: string;
+  gif: string;
+  poster: string;
   comments: number;
   likes: string[];
   favorites: string[];
@@ -16,13 +18,6 @@ export interface IVideo {
     private: boolean;
     friends_only: boolean;
   };
-}
-
-export interface IAddVideo {
-  url: string;
-  title: string;
-  name: string;
-  uid: string;
 }
 
 export interface GetManyOfVideoByUid extends GenericPagination {

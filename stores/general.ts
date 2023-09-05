@@ -12,7 +12,7 @@ import {
   GetComments,
   UpdateComment,
 } from '~/services/types/comment_api';
-import { GetManyOfVideoByUid, IAddVideo } from '~/services/types/video_api';
+import { GetManyOfVideoByUid } from '~/services/types/video_api';
 import { useProfileStore } from './profile';
 import { useUserStore } from './user';
 
@@ -101,10 +101,6 @@ export const useGeneralStore = defineStore('general', {
 
     async getRandomVideo(size = 1) {
       return await VideoApi.random(size);
-    },
-
-    async uploadVideo(data: IAddVideo) {
-      await VideoApi.upload(data);
     },
 
     async removeVideo(vid: string) {
