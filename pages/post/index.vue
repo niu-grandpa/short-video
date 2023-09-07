@@ -35,7 +35,7 @@
         评论区 ({{ videoData?.comments }})
       </ADivider>
 
-      <VideoComments
+      <LazyVideoComments
         :belong="vid"
         :level="CommentLevel.ONE"
         max-height="calc(100vh - 188px)"
@@ -52,7 +52,7 @@
       :keyboard="false"
       :bodyStyle="{ padding: 0 }"
       :width="drawerWidth">
-      <VideoComments
+      <LazyVideoComments
         :belong="cpId"
         is-secondary
         :level="CommentLevel.TOW"
@@ -64,7 +64,6 @@
 <script setup lang="ts">
 import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { useAdjustVideoBuffering } from '~/hooks';
 import { CommentLevel } from '~/services/types/comment_api';
 import { IVideo } from '~/services/types/video_api';
 
@@ -91,9 +90,9 @@ const videoData = ref<IVideo>();
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 
-useAsyncData(async () => {
+onMounted(async () => {
   try {
-    return (videoData.value = await getOneVideo(vid.value));
+    videoData.value = await getOneVideo(vid.value);
   } catch (error) {
     console.log('视频不存在');
   }
@@ -102,11 +101,11 @@ useAsyncData(async () => {
 onMounted(() => {
   const velm = videoRef.value;
   if (velm) {
-    const adjustBuffering = useAdjustVideoBuffering(velm);
     velm.onloadeddata = () => {
       velm.play();
-      adjustBuffering();
-      console.log('视频加载完成');
+    };
+    velm.onerror = () => {
+      message.error('请刷新后重试');
     };
     velm.load();
   }
