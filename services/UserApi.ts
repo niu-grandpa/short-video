@@ -11,6 +11,7 @@ async function login(data: UserLogin): Promise<string> {
 
 async function logout(): Promise<void> {
   return await useRequest({
+    methods: 'POST',
     url: '/users/logout',
   });
 }

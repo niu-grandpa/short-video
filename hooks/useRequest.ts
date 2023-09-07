@@ -76,7 +76,7 @@ export function useRequest<T>(cfg: UseRequest): Promise<T> {
     // @ts-ignore
     instance[_methods](`/api${url}`, carry)
       .then((res: ApiReturnType<T>) => {
-        if (res?.data?.data) {
+        if (res?.data?.data !== undefined) {
           resolve(res.data.data);
         } else {
           resolve([] as any);
