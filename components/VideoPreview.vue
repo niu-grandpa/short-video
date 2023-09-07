@@ -149,7 +149,7 @@ const onFollow = useASDCallback(async () => {
 const onToDetail = async () => {
   const { vid } = data.value;
   await watched(vid);
-  const { href } = router.resolve({ name: '/post', query: { id: vid } });
+  const { href } = router.resolve({ path: '/post', query: { id: vid } });
   window.open(href, '_blank');
 };
 </script>
