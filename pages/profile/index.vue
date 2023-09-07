@@ -154,7 +154,7 @@ const {
 } = useNuxtApp();
 
 const {
-  params: { id },
+  query: { id },
 } = useRoute();
 
 const isSelf = uid === id;

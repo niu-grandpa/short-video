@@ -1,3 +1,5 @@
+import { GenericPagination } from './comment_api';
+
 export enum UserRoles {
   Standard,
   Admin,
@@ -29,6 +31,10 @@ export interface IUser {
     lock_posts: boolean;
     lock_favorited: boolean;
   };
+}
+
+export interface GetAllUsers extends GenericPagination {
+  word?: string;
 }
 
 export interface AddUser {

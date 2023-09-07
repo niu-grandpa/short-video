@@ -3,7 +3,12 @@ import PermissionApi from '~/services/PermissionApi';
 import UploadApi from '~/services/UploadApi';
 import UserApi from '~/services/UserApi';
 import { IPVideo } from '~/services/types/permission_api';
-import { IUser, UserLogin, UserRoles } from '~/services/types/user_api';
+import {
+  GetAllUsers,
+  IUser,
+  UserLogin,
+  UserRoles,
+} from '~/services/types/user_api';
 
 // 用户行为数据流
 export const useUserStore = defineStore('user', {
@@ -77,8 +82,8 @@ export const useUserStore = defineStore('user', {
       this.$state.phoneNumber = phoneNumber;
     },
 
-    async getAll() {
-      return await UserApi.getAll();
+    async getAll(data: GetAllUsers) {
+      return await UserApi.getAll(data);
     },
 
     async getRecommend() {

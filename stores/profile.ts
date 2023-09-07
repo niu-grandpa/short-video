@@ -13,7 +13,7 @@ export const useProfileStore = defineStore('profile', {
     favorites: Array<string>(), // 我的收藏
     following: Array<string>(), // 我关注的人
     followers: Array<string>(), // 粉丝数
-    nickname: '未登录',
+    nickname: '',
     user_sign: '',
   }),
 

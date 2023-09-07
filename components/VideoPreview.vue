@@ -14,7 +14,7 @@
     <section class="absolute w-full top-[12px] px-[6px] text-white z-20">
       <ARow justify="center">
         <ACol :span="5">
-          <NuxtLink :to="`/profile/${data.uid}`">
+          <NuxtLink target="_blank" :to="`/profile/${data.uid}`">
             <Avatar
               :size="42"
               :src="avatar"
@@ -101,7 +101,6 @@ const props = defineProps<{ dataSource: object }>();
 const router = useRouter();
 
 const data = ref<IVideo>(props.dataSource as IVideo);
-
 const imgRef = ref<HTMLImageElement>();
 const isFollow = ref(following.includes(data.value.uid));
 
@@ -150,6 +149,7 @@ const onFollow = useASDCallback(async () => {
 const onToDetail = async () => {
   const { vid } = data.value;
   await watched(vid);
-  router.push(`/post/${vid}`);
+  const { href } = router.resolve({ name: '/post', query: { id: vid } });
+  window.open(href, '_blank');
 };
 </script>

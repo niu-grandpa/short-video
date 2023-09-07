@@ -1,5 +1,5 @@
 import { useRequest } from '@/hooks';
-import { IUser, UserLogin } from './types/user_api';
+import { GetAllUsers, IUser, UserLogin } from './types/user_api';
 
 async function login(data: UserLogin): Promise<string> {
   return await useRequest<string>({
@@ -21,9 +21,10 @@ async function getOne(): Promise<IUser> {
   });
 }
 
-async function getAll(): Promise<IUser[]> {
+async function getAll(data: GetAllUsers): Promise<IUser[]> {
   return await useRequest<IUser[]>({
     url: '/users/all',
+    data,
   });
 }
 

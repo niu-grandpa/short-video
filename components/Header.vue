@@ -5,11 +5,37 @@
     <nav
       class="max-w-[1340px] flex items-center justify-between w-full px-8 mx-auto">
       <NuxtLink to="/" class="lg:w-[20%] w-[70%]">
-        <img width="115" src="~/assets/images/tiktok-logo.png" />
+        <img width="115" src="~/assets/images/logo.png" />
       </NuxtLink>
 
       <div class="hidden md:flex items-center max-w-[380px] w-full">
-        <AInputSearch placeholder="搜索用户" size="large" />
+        <ClientOnly>
+          <ASelect
+            size="large"
+            allowClear
+            show-search
+            style="width: 100%"
+            label-in-value
+            :filter-option="false"
+            placeholder="搜索用户"
+            @select="onToProfile"
+            @search="onFindUsers"
+            v-model:value="searchVal"
+            :not-found-content="fetching ? undefined : null">
+            <template v-if="fetching" #notFoundContent>
+              <ASpin size="small" />
+            </template>
+            <ASelectOption
+              v-for="item in searchUsers"
+              :value="item.uid"
+              :key="item.uid">
+              <div class="flex items-center">
+                <Avatar :src="item.avatar" class="mr-[16px]" />
+                <span>{{ item.nickname }}</span>
+              </div>
+            </ASelectOption>
+          </ASelect>
+        </ClientOnly>
       </div>
 
       <ASpace>
@@ -43,6 +69,7 @@
                 <AMenu>
                   <AMenuItem key="my">
                     <NuxtLink
+                      target="_blank"
                       :to="`/profile/${$userStore.uid}`"
                       class="flex items-center">
                       <UserOutlined class="mr-[3px]" /> 个人信息
@@ -66,16 +93,28 @@
 </template>
 
 <script setup lang="ts">
-import { useASDCallback } from '@/hooks';
 import { message } from 'ant-design-vue';
+import { useASDCallback, useDebounce } from '~/hooks';
+import { IUser } from '~/services/types/user_api';
 
 const { $generalStore, $userStore, $profileStore } = useNuxtApp();
 
 const router = useRouter();
 
+const fetching = ref(false);
+const searchVal = ref<undefined | string>(undefined);
+const searchUsers = ref<IUser[]>([]);
+
 const onToUpload = useASDCallback(() => {
-  router.push('/upload');
+  const { href } = router.resolve('/upload');
+  window.open(href, '_blank');
 });
+
+const onToProfile = ({ value }: any) => {
+  const { href } = router.resolve({ path: '/profile', query: { id: value } });
+  window.open(href, '_blank');
+  searchVal.value = '';
+};
 
 const onLogout = async () => {
   try {
@@ -88,4 +127,28 @@ const onLogout = async () => {
     message.error('退出登录失败');
   }
 };
+
+const onFindUsers = useDebounce(async (val: string) => {
+  try {
+    fetching.value = true;
+    searchUsers.value = await $userStore.getAll({
+      word: val,
+      page: 0,
+      size: 10,
+    });
+  } catch (error) {
+    searchUsers.value = [];
+    console.log(error);
+  } finally {
+    fetching.value = false;
+  }
+}, 200);
+
+watch(
+  () => searchVal.value,
+  () => {
+    searchUsers.value = [];
+    fetching.value = false;
+  }
+);
 </script>

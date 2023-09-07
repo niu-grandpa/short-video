@@ -72,10 +72,12 @@ const {
   $generalStore: { getRandomVideo, getOneVideo },
 } = useNuxtApp();
 
-const route = useRoute();
+const {
+  query: { id },
+} = useRoute();
 
 const cpId = ref(''); // 隶属于子评论的父级id
-const vid = ref(route.params.id as string);
+const vid = ref(id as string);
 
 const openDrawer = ref(false);
 const commentsRef = ref(null);

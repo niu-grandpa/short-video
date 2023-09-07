@@ -25,7 +25,7 @@
 
     <ARow v-if="videos.length" :gutter="[48, 64]" class="py-[42px]">
       <ACol :span="6" v-for="item in videos" :key="item.vid">
-        <VideoPreview :data-source="item" />
+        <LazyVideoPreview :data-source="item" />
       </ACol>
     </ARow>
 
