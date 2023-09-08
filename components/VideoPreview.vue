@@ -60,15 +60,17 @@
       <img
         v-if="!isHover"
         loading="eager"
+        crossorigin="anonymous"
         ref="imgRef"
         class="w-full h-full rounded-xl"
-        :src="baseURL + data.poster" />
+        :src="'https://circumvent-cors.herokuapp.com/'baseURL + data.poster" />
       <img
         v-else
         loading="lazy"
         ref="imgRef"
+        crossorigin="anonymous"
         class="w-full h-full rounded-xl"
-        :src="baseURL + data.gif" />
+        :src="'https://circumvent-cors.herokuapp.com/'baseURL + data.gif" />
     </div>
 
     <VideoActionBar
