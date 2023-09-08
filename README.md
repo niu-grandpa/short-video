@@ -58,6 +58,14 @@ tailwindcss：
 
   - 因为组件内部依赖document对象，但在服务端渲染的时候没有document就会报错，解决办法是使用vue提供的 `<client-only>` 组件包裹，让它在客户端渲染
 
+- 项目部署后由于前端域名是https，后端服务器域名是http，造成接口无法访问
+
+  - 办法1：服务器域名安装ssl证书，不过由于未购买域名以及域名认证、证书安装的流程复杂，放弃了
+
+  - 办法2：前后端以及nginx增加响应头 `Content-Security-Policy`: `upgrade-insecure-requests`，也就是csp指令让浏览器自动升级请求从http到https，不过依然无效
+
+  - 最终办法：手动在服务器使用openssl生成自签名SSL证书，并配置到nginx 443端口再代理前后端域名，最终可以服务器ip地址可以加上https访问。[安装教程](https://www.cnblogs.com/007sx/p/12583675.html)
+
 - 如何在axios中统一给请求带上token
 
   - 使用axios的拦截器在发送请求前，将token添加到请求头中。(headers.Authorization)
