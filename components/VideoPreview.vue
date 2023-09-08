@@ -63,14 +63,16 @@
         crossorigin="anonymous"
         ref="imgRef"
         class="w-full h-full rounded-xl"
-        :src="'https://circumvent-cors.herokuapp.com/'baseURL + data.poster" />
+        :src="
+          'https://circumvent-cors.herokuapp.com/' + baseURL + data.poster
+        " />
       <img
         v-else
         loading="lazy"
         ref="imgRef"
         crossorigin="anonymous"
         class="w-full h-full rounded-xl"
-        :src="'https://circumvent-cors.herokuapp.com/'baseURL + data.gif" />
+        :src="'https://circumvent-cors.herokuapp.com/' + baseURL + data.gif" />
     </div>
 
     <VideoActionBar
