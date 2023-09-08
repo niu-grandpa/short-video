@@ -2,9 +2,6 @@
   <Head>
     <title>Microdio</title>
     <Meta
-      http-equiv="content-security-policy"
-      content="upgrade-insecure-requests" />
-    <Meta
       name="description"
       content="microdio (microdio.vercel.app) 是一个刷短视频的网站" />
     <Meta
