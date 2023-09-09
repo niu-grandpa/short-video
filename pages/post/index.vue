@@ -1,40 +1,24 @@
 <template>
   <Head>
-    <Title>{{ videoData?.title }}_short video</Title>
+    <Title>{{ currentVideo?.title }}_short video</Title>
   </Head>
 
-  <ARow>
+  <ARow style="overflow: hidden">
     <ACol :span="15" class="relative bg-[black] h-[100vh]">
-      <ASpace
-        direction="vertical"
-        class="absolute top-[48px] right-[16px] z-20">
-        <AButton ghost shape="circle" :icon="h(UpOutlined)" @click="onSwitch" />
-        <AButton
-          ghost
-          shape="circle"
-          :icon="h(DownOutlined)"
-          @click="() => onSwitch(true)" />
-      </ASpace>
-
-      <video
-        loop
-        controls
-        ref="videoRef"
-        preload="metadata"
-        :src="videoData?.url"
-        class="w-full h-full" />
+      <VideoSwiper
+        v-if="initVideoData.length"
+        :default-data="initVideoData"
+        @change="(data) => (currentVideo = data as IVideo)" />
     </ACol>
 
     <ACol :span="9" class="pt-[14px]" ref="commentsRef">
       <APageHeader
-        :title="`${videoData?.title} - ${videoData?.author}`"
+        :title="`${currentVideo?.title} - ${currentVideo?.author}`"
         class="py-[0]"
         @back="() => $router.push($generalStore.backUrl)" />
-
       <ADivider class="px-[18px]" style="margin: 0; margin-top: 12px">
-        评论区 ({{ videoData?.comments }})
+        评论区 ({{ currentVideo?.comments }})
       </ADivider>
-
       <LazyVideoComments
         :belong="vid"
         :level="CommentLevel.ONE"
@@ -62,85 +46,41 @@
 </template>
 
 <script setup lang="ts">
-import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
 import { CommentLevel } from '~/services/types/comment_api';
 import { IVideo } from '~/services/types/video_api';
 
 const {
-  $generalStore: { getRandomVideo, getOneVideo },
+  $generalStore: { getOneVideo },
 } = useNuxtApp();
 
 const {
   query: { id },
 } = useRoute();
 
-const cpId = ref(''); // 隶属于子评论的父级id
-const vid = ref(id as string);
+const vid = id as string;
 
+// 隶属于子评论的父级id
+const cpId = ref('');
 const openDrawer = ref(false);
 const commentsRef = ref(null);
+const currentVideo = ref<IVideo>();
+const initVideoData = ref<IVideo[]>([]);
 
 const drawerWidth = computed(
   () => commentsRef.value?.['$el']['offsetWidth']! - 54
 );
 
-const videoArr = ref<IVideo[]>([]);
-const videoData = ref<IVideo>();
-
-const videoRef = ref<HTMLVideoElement | null>(null);
-
 onMounted(async () => {
   try {
-    videoData.value = await getOneVideo(vid.value);
+    const data = await getOneVideo(vid);
+    currentVideo.value = data;
+    // 多加的一个用于初始轮播数据，才能显示箭头
+    const init = [data, data];
+    initVideoData.value = init;
   } catch (error) {
     console.log('视频不存在');
   }
 });
-
-onMounted(() => {
-  const velm = videoRef.value;
-  if (velm) {
-    velm.onloadeddata = () => {
-      velm.play();
-    };
-    velm.onerror = () => {
-      message.error('请刷新后重试');
-    };
-    velm.load();
-  }
-});
-
-const onSwitch = async (next = false) => {
-  // 数组缓存优化
-  const arr = videoArr.value;
-  const curIdx = 0;
-  try {
-    if (next) {
-      const lastIdx = curIdx + 1;
-      // 如果找不到栈中的下一个视频，说明是在末尾位置需要请求新视频并入栈
-      if (!arr[lastIdx]) {
-        const data = (await getRandomVideo(1))[0];
-        arr.push(data);
-      }
-      // 在当前位置找到下一个
-      videoData.value = arr[lastIdx];
-    } else {
-      const prevIdx = curIdx - 1;
-      // 如果找不到栈中的上一个视频，说明是在首位需要请求新视频并压入首部
-      if (!arr[prevIdx]) {
-        const data = (await getRandomVideo(1))[0];
-        arr.unshift(data);
-      }
-      // 在当前位置找到上一个
-      videoData.value = arr[prevIdx];
-    }
-    vid.value = videoData.value.vid;
-  } catch (error) {
-    message.error('切换视频失败');
-    console.log(error);
-  }
-};
 
 // 加载子评论
 const onLoadSecondary = (pId: string) => {
