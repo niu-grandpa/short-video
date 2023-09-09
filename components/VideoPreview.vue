@@ -58,15 +58,13 @@
 
     <div @click="onToDetail" class="w-full h-full">
       <img
-        v-if="!isHover"
-        loading="eager"
+        v-show="!isHover"
         crossorigin="anonymous"
         ref="imgRef"
         class="w-full h-full rounded-xl"
         :src="baseURL + data.poster" />
       <img
-        v-else
-        loading="lazy"
+        v-show="isHover"
         ref="imgRef"
         crossorigin="anonymous"
         class="w-full h-full rounded-xl"
